@@ -1,0 +1,28 @@
+.form__dropdown-items {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(98, 98, 98, 0.2);
+  padding: 10px;
+  top: 100%;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  max-height: 100px;
+  overflow-x: hidden;
+  height: auto;
+}
+
+.form__dropdown-items_active {
+  display: flex;
+}
+
+.form__dropdown-item-btn {
+  padding: 0;
+  border: none;
+  font: inherit;
+  color: inherit;
+  background-color: transparent;
+}

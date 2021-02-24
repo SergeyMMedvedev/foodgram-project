@@ -1,0 +1,79 @@
+.tags {
+  display: flex;
+  height: 100%;
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+}
+
+.tags__checkbox {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: #ddd;
+  border: 1px solid currentColor;
+  -webkit-appearance: none;
+  outline: none;
+  margin-right: 8px;
+  cursor: pointer;
+}
+.tags__checkbox:checked {
+  background: currentColor;
+}
+.tags__checkbox:checked:before {
+  content: '';
+  position: absolute;
+  background: url("../../images/yes.svg");
+  width: 12px;
+  height: 9px;
+  top: 7px;
+  left: 5px;
+}
+.tags__checkbox:active {
+  box-shadow: 0 0 7px #ddd;
+}
+
+.tags__checkbox_active {
+  background: currentColor;
+}
+.tags__checkbox_active:before {
+  content: '';
+  position: absolute;
+  background: url("../../images/yes.svg");
+  width: 12px;
+  height: 9px;
+  top: 7px;
+  left: 5px;
+}
+
+.tags__checkbox_style_green {
+  color: #49B64E;
+}
+
+.tags__checkbox_style_orange {
+  color: #E26C2D;
+}
+
+.tags__checkbox_style_purple {
+  color: #8775D2;
+}
+
+.tags__item {
+  display: flex;
+  align-items: center;
+  margin-right: 24px;
+}
+.tags__item:last-child {
+  margin-right: 0;
+}
+
+.tags__label {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  cursor: default;
+}

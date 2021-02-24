@@ -2,6 +2,8 @@ from rest_framework import serializers
 from .models import Ingredient, Recipe, Tag
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
+from django.core import exceptions
+import django.contrib.auth.password_validation as validators
 
 User = get_user_model()
 
@@ -15,6 +17,26 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('old_password', 'new_password', 'new_password_again')
+
+    def validate(self, data):
+        # here data has all the fields which have validated values
+        # so we can create a User instance out of it
+        # get the password from the data
+        password = data.get('new_password')
+
+        errors = dict()
+        try:
+            # validate the password and catch the exception
+            validators.validate_password(password=password)
+
+        # the exception raised here is different than serializers.ValidationError
+        except exceptions.ValidationError as e:
+            errors['new_password'] = list(e.messages)
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return super(ChangePasswordSerializer, self).validate(data)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -38,6 +60,28 @@ class UserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.save()
         return user
+
+    def validate(self, data):
+        # here data has all the fields which have validated values
+        # so we can create a User instance out of it
+        user = User(**data)
+
+        # get the password from the data
+        password = data.get('password')
+
+        errors = dict()
+        try:
+            # validate the password and catch the exception
+            validators.validate_password(password=password, user=User)
+
+        # the exception raised here is different than serializers.ValidationError
+        except exceptions.ValidationError as e:
+            errors['password'] = list(e.messages)
+
+        if errors:
+            raise serializers.ValidationError(errors)
+
+        return super(UserSerializer, self).validate(data)
 
 
 class IngredientSerializer(serializers.ModelSerializer):

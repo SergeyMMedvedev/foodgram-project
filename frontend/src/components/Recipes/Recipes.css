@@ -1,0 +1,55 @@
+.recipe {
+  display: grid;
+  position: relative;
+  grid-template-areas: 'title image'
+  'text image';
+  justify-content: space-between;
+  column-gap: 50px;
+}
+
+.recipe__image {
+  width: 72px;
+  height: 72px;
+  grid-area: image;
+  border-radius: 50%;
+}
+
+.recipe__image_big {
+  width: 90px;
+  height: 90px;
+}
+
+.recipe__text {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 17px;
+  max-width: 200px;
+  color: #000000;
+  grid-area: text;
+  align-self: start;
+  margin: 0 0 28px;
+}
+.recipe__text:last-child {
+  margin-bottom: 0;
+}
+
+.recipe__title {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  max-width: 200px;
+
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  margin: 10px 0 13px;
+
+  grid-area: title;
+}
+
+.recipe_reverse {
+  grid-template-areas: 'image title'
+  'image text';
+}

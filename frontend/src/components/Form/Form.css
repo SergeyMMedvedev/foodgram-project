@@ -1,0 +1,367 @@
+.form-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 59px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 57px 100px 64px 68px;
+  background: #FFFFFF;
+  border: 1px solid #EEEEEE;
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+  border-radius: 16px;
+  max-width: 770px;
+  width: 100%;
+}
+
+.form__dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.form__dropdown-items {
+  position: absolute;
+  display: none;
+  flex-direction: column;
+  margin: 0;
+  background: #FFFFFF;
+  border: 1px solid rgba(98, 98, 98, 0.2);
+  padding: 10px;
+  top: 100%;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  max-height: 100px;
+  overflow-x: hidden;
+  height: auto;
+}
+
+.form__dropdown-items_active {
+  display: flex;
+}
+
+.form__error {
+  display: block;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  color: #FF0000;
+  justify-self: start;
+  grid-column: 1/-1;
+}
+.form__error:before {
+  content: '';
+  flex-basis: 100%;
+  height: 0;
+}
+.form__error:empty {
+  display: none;
+}
+
+.form__field-group {
+  display: grid;
+  grid-gap: 9px;
+  grid-template-rows: auto;
+  grid-template-columns: 1fr;
+  align-items: center;
+
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  margin-left: auto;
+  max-width: 370px;
+  width: 100%;
+  position: relative;
+}
+
+.form__field-group_time {
+  grid-template-columns: 2fr 0.5fr 8fr
+}
+
+.form__field-group-ingredientes {
+  display: grid;
+  grid-template-columns: 8fr 2fr 1.3fr;
+  grid-template-rows: auto;
+  grid-column-gap: 12px;
+  justify-items: end;
+  align-items: center;
+}
+
+.form__field-item-delete {
+  display: flex;
+  align-self: center;
+  width: 16px;
+  height: 16px;
+  background-size: contain;
+  background: url("../../images/icons8-delete-16.png");
+  cursor: pointer;
+  border: none;
+}
+
+.form__field-item-delete_ingredient {
+  margin-left: 12px;
+}
+
+.form__field-item-ingredient {
+  display: flex;
+  align-items: center;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+}
+
+.form__file {
+
+}
+.form__file[type='file'] {
+    display: none;
+}
+
+.form__file-button {
+  display: block;
+  background: #DEDEDE;
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 22px;
+  color: #000000;
+  padding:  13px 24px;
+  width: max-content;
+}
+
+.form__footer {
+  display: flex;
+  align-items: center;
+}
+
+.form__forgot-link {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  margin-left: 28px;
+  cursor: pointer;
+}
+.form__forgot-link:before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 2px;
+  left: 0;
+  background:  currentColor;
+}
+
+.form__group {
+  display: flex;
+  width: 100%;
+  margin-bottom: 25px;
+}
+
+.form__info-text {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: #000000;
+  max-width: 600px;
+  margin-bottom: 25px;
+}
+
+.form__ingredient-link {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  cursor: pointer;
+  justify-self: start;
+  position: relative;
+  grid-row: auto;
+  grid-column: 1/-1;
+}
+.form__ingredient-link:before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  bottom: 2px;
+  left: 0;
+  background:  currentColor;
+}
+
+/* .form__field-group__ingredientes {
+  display: grid;
+  grid-template-columns: 8fr 2fr 80px;
+  grid-template-rows: auto;
+  grid-column-gap: 12px;
+  justify-items: end;
+} */
+
+.form__input {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  padding: 12px 9px;
+  max-width: 370px;
+  width: 100%;
+  max-height: 44px;
+  outline: none;
+  resize: none;
+  overflow: hidden;
+  display: block;
+  white-space: nowrap;
+}
+.form__input:focus {
+  border: 1px solid #4A61DD;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form__input::-webkit-outer-spin-button,
+.form__input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
+.form__input-info {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+.form__item-list {
+  list-style-type: none;
+  cursor: pointer;
+  margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 22px;
+  color: #000000;
+}
+.form__item-list:last-child {
+  margin-bottom: 0;
+}
+
+.form__label {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  max-width: 170px;
+  padding: 0;
+  margin: 0;
+}
+
+.form__textarea {
+  background: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  border-radius: 6px;
+  resize: none;
+  outline: none;
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  padding: 12px 9px;
+  width: 100%;
+}
+
+.form__textarea:focus {
+  border: 1px solid #4A61DD;
+  box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form__photo-file {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 20px;
+  color: #000000;
+  height: auto;
+  display: flex;
+}
+
+.form__photo-input {
+  display: flex;
+}
+
+.form__photo-input::-webkit-file-upload-button {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  background: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  height: 48px;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.2s;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  width: max-content;
+  background-color: rgb(199, 199, 199);
+}
+
+.form__footer_recipe {
+  margin-top: 50px;
+}
+
+.form__field-group_photo {
+  grid-template-columns: 8fr 2fr 0.5fr;
+}
+
+.form__ingredient-add-btn {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
+  background: none;
+  line-height: 1;
+  text-decoration: none;
+  border-top: 1px solid transparent;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-bottom: 2px solid black;
+  transition: background 0.2s;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  width: max-content;
+  display: flex;
+  align-items: center;
+}

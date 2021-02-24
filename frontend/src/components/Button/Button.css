@@ -1,0 +1,72 @@
+.button {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  background: none;
+  border-radius: 6px;
+  padding: 12px 24px;
+  height: 48px;
+  line-height: 1;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: background 0.2s;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  width: max-content;
+
+  display: flex;
+  align-items: center;
+}
+.button:active {
+  box-shadow: 0 0 7px #ddd;
+}
+
+.button__icon {
+  margin-right: 13px;
+}
+
+.button_style_blue {
+  background: #4A61DD;
+  color: #FFFFFF;
+  transition: background 0.2s;
+}
+.button_style_blue:hover {
+  background: #2845DF;
+}
+
+.button_style_light-blue-outline {
+  color: #4A61DD;
+  border: 1px solid #DEE2F2;
+  background: #fff;
+}
+.button_style_light-blue-outline:hover {
+  background: #f8f8f8;
+}
+
+.button_style_light-blue {
+  background: #F0F3FF;
+  color: #4A61DD;
+}
+.button_style_light-blue:hover {
+  background: #D8DEFF;
+  color: #4A61DD;
+}
+
+.button_style_none {
+  padding: 0;
+}
+.button_style_none:active {
+  box-shadow: none;
+}
+
+.button_size_auto {
+  height: 100%;
+  width: 100%;
+}
+
+.button_size_subscribe {
+  padding: 17px 18px;
+  width: 215px;
+}
