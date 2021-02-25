@@ -118,8 +118,62 @@ class Api {
   }
 
   async unsubscribe(id) {
-    console.log('unsubscribe');
     const loadingResponse = fetch((`${this.baseUrl}/subscriptions/${id}/`), {
+      method: 'DELETE',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    if (!response.status === 204) {
+      return Promise.reject(`Ошибка! ${response}`);
+    }
+    return new Promise((resolve) => {
+      resolve(response.status);
+    });
+  }
+
+  async getFavoritesRecipes() {
+    const loadingResponse = fetch((`${this.baseUrl}/favorites/`), {
+      method: 'GET',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async addToFavoritesRecipes(recipeId) {
+    const loadingResponse = fetch((`${this.baseUrl}/favorites/`), {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        favorite: recipeId,
+      }),
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async deleteFromFavoritesRecipes(id) {
+    const loadingResponse = fetch((`${this.baseUrl}/favorites/${+id}/`), {
       method: 'DELETE',
       headers: this.headers,
     });

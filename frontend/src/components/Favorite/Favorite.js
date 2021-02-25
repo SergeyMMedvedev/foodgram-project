@@ -1,28 +1,33 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import './Favorite.css';
 import CardList from '../CardList/CardList';
 import Card from '../Card/Card';
 import Pagination from '../Pagination/Pagination';
+import { CurrentFavoriteRecipes } from '../../context/CurrentFavoriteRecipesContext';
 
-function Favorite() {
+function Favorite({
+  onAddToFavorites,
+  onDeleteFromFavorites,
+  // favoriteData,
+}) {
+  const recipes = useContext(CurrentFavoriteRecipes);
+
   return (
     <>
       <CardList>
-        <Card
-          dataId="120"
-        />
-        <Card
-          dataId="121"
-        />
-        <Card
-          dataId="122"
-        />
-        <Card
-          dataId="123"
-        />
-        <Card
-          dataId="124"
-        />
+        {recipes.map((recipe) => (
+          <Card
+            key={`card__${recipe.id}`}
+            recipeId={recipe.id}
+            recipeName={recipe.name}
+            tags={recipe.tag}
+            cookingTime={recipe.cooking_time}
+            author={recipe.author}
+            onAddToFavorites={onAddToFavorites}
+            onDeleteFromFavorites={onDeleteFromFavorites}
+            // favoriteData={favoriteData}
+          />
+        ))}
       </CardList>
       <Pagination />
     </>

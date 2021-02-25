@@ -8,13 +8,15 @@ from .views import (
     UserView,
     ChangePasswordView,
     FollowListCreateAPIView,
-    FollowDestroyAPIView
+    FollowDestroyAPIView,
+    FavoriteAPIView,
 )
 from rest_framework.authtoken import views
 
 router = DefaultRouter()
 router.register(r'ingredients', IngredientViewSet, basename='ingredients')
 router.register(r'recipes', RecipeViewSet, basename='recipes')
+router.register(r'favorites', FavoriteAPIView, basename='favorites')
 
 
 urlpatterns = [

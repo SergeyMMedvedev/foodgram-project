@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ingredient, Recipe, Tag, Follow
+from .models import Ingredient, Recipe, Tag, Follow, Favorite
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
 from django.core import exceptions
@@ -123,10 +123,6 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(serializers.ModelSerializer):
-    # user = UserSerializer(read_only=True)
-    # author = UserSerializer(many=True, read_only=True)
-    # user = serializers.CharField()
-    # author = serializers.CharField()
     user = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
@@ -152,3 +148,31 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Follow
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    favorite = RecipeSerializer(read_only=True)
+
+    def validate(self, attrs):
+        if self.context.get('request').method == 'POST':
+            user = self.context.get('request').user
+            recipe_id = self.context.get('request').data.get('favorite')
+            print('validate')
+            print('user', user)
+            print('recipe_id', recipe_id)
+            print('Favorite.objects.filter(favorite=recipe_id)', Favorite.objects.filter(favorite=recipe_id))
+            queryset = Favorite.objects.filter(user=user)
+            print('Favorite.objects.filter(user=user)', queryset)
+            print('queryset.filter(favorite=recipe_id)', queryset.filter(favorite=recipe_id))
+            if queryset.filter(favorite=recipe_id):
+                raise serializers.ValidationError(
+                    'Вы уже добавили этот рецепт')
+        return attrs
+
+    class Meta:
+        fields = '__all__'
+        model = Favorite

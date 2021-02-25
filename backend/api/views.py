@@ -3,13 +3,14 @@ from rest_framework import status, mixins, viewsets
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, ListCreateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, generics
-from .models import Ingredient, Recipe, Tag, Follow
+from .models import Ingredient, Recipe, Tag, Follow, Favorite
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
     UserSerializer,
     ChangePasswordSerializer,
-    FollowSerializer
+    FollowSerializer,
+    FavoriteSerializer
 )
 from rest_framework.parsers import MultiPartParser, FileUploadParser, FormParser
 from django.views.decorators.csrf import csrf_exempt
@@ -227,3 +228,25 @@ class FollowDestroyAPIView(DestroyAPIView):
     serializer_class = FollowSerializer
     model = Follow
     queryset = Follow.objects.all()
+
+
+class FavoriteAPIView(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        queryset = Favorite.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        print('perform_create')
+        print('perform_create self.request.data', self.request.data)
+        recipe = get_object_or_404(Recipe,
+                                   pk=self.request.data.get('favorite'))
+
+        serializer.save(user=self.request.user,
+                        favorite=recipe)

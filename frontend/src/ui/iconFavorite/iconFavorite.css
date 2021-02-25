@@ -1,0 +1,20 @@
+.icon-favorite {
+  display: block;
+  position: relative;
+  width: 24px;
+  height: 24px;
+  background-image: url("../../images/star.svg");
+  background-size: 100%;
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.icon-favorite_active {
+  background-image: url("../../images/starActive.svg");
+}
+
+.icon-favorite_big {
+  width: 30px;
+  height: 30px;
+}

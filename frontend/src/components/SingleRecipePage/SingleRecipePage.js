@@ -5,16 +5,34 @@ import testCardImg from '../../images/testCardImg.png';
 import api from '../../utils/Api';
 import renderTags from '../../utils/renderTags';
 import CurrentUserContext from '../../context/CurrentUserContext';
+import { CurrentFavoriteRecipes, CurrentFavoritesData } from '../../context/CurrentFavoriteRecipesContext';
+import IconFavorite from '../../ui/iconFavorite/iconFavorite';
 
 function SingleRecipePage({
   onSubscribe,
   subscriptions,
   onUnsubscribe,
+  onAddToFavorites,
+  onDeleteFromFavorites,
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
   const [isUserisSubscribed, setIsUserisSubscribed] = useState(false);
   const currentUser = useContext(CurrentUserContext);
+  const [isCardFavorite, setIsCardFavorite] = useState(false);
+  const favoriteRecipes = useContext(CurrentFavoriteRecipes);
+  const favoriteData = useContext(CurrentFavoritesData);
+
+  function handleAddToFavorites() {
+    onAddToFavorites(recipeId);
+  }
+
+  function handleRemoveFromFavorites() {
+    const favoriteDataItem = favoriteData.find((item) => (
+      item.favorite.id === +recipeId
+    ));
+    onDeleteFromFavorites(favoriteDataItem.id);
+  }
 
   function handleSubscribe() {
     onSubscribe(recipe.author, setIsUserisSubscribed);
@@ -36,6 +54,18 @@ function SingleRecipePage({
         console.log(err);
       });
   }, [recipeId]);
+
+  useEffect(() => {
+    const favoriteIds = [];
+    favoriteRecipes.forEach((item) => (
+      favoriteIds.push(item.id)
+    ));
+    if (favoriteIds.includes(+recipeId)) {
+      setIsCardFavorite(true);
+    } else {
+      setIsCardFavorite(false);
+    }
+  }, [favoriteRecipes]);
 
   useEffect(() => {
     if (recipe.author) {
@@ -98,8 +128,11 @@ function SingleRecipePage({
         <div className="single-card__header-info">
           <h1 className="single-card__title">{recipe.name}</h1>
           <div className="single-card__favorite">
-            <button type="button" className="button button_style_none" name="favorites" data-out>
-              <span className="icon-favorite icon-favorite_big" />
+            <button onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites} type="button" className="button button_style_none" name="favorites" data-out>
+              <IconFavorite
+                big
+                active={isCardFavorite}
+              />
             </button>
             <div className="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
           </div>
