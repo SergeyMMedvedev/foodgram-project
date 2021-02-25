@@ -20,7 +20,11 @@ class Auth {
     const response = await loadingRegisterInfo;
     const newUserRegistrationData = await response.json();
     if (!response.ok) {
-      return Promise.reject(`Ошибка: ${newUserRegistrationData.message}`);
+      const errors = [];
+      Object.keys(newUserRegistrationData).forEach((key) => {
+        errors.push(`${key}: ${newUserRegistrationData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
     }
     return new Promise((resolve) => {
       resolve(newUserRegistrationData);
@@ -36,10 +40,38 @@ class Auth {
     const response = await loadingAuthorizeInfo;
     const authorizeData = await response.json();
     if (!response.ok) {
-      return Promise.reject(`Ошибка: ${authorizeData.message}`);
+      const errors = [];
+      Object.keys(authorizeData).forEach((key) => {
+        errors.push(`${key}: ${authorizeData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
     }
     return new Promise((resolve) => {
       resolve(authorizeData);
+    });
+  }
+
+  async changePassword(oldPassword, newPassword, newPasswordAgain) {
+    const loadingPasswordChangeInfo = fetch(`${this.baseUrl}/change-password/`, {
+      method: 'PATCH',
+      headers: this.headers,
+      body: JSON.stringify({
+        old_password: oldPassword,
+        new_password: newPassword,
+        new_password_again: newPasswordAgain,
+      }),
+    });
+    const response = await loadingPasswordChangeInfo;
+    const changingPasswordData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(changingPasswordData).forEach((key) => {
+        errors.push(`${key}: ${changingPasswordData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(changingPasswordData);
     });
   }
 

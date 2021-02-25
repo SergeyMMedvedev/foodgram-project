@@ -6,8 +6,14 @@ class Api {
     this.headers = options.headers;
   }
 
-  async getRecipes() {
-    const loadingRecipes = fetch((`${this.baseUrl}/recipes`), {
+  async getRecipes(author) {
+    let urlParams;
+    if (author) {
+      urlParams = `/recipes?author=${author}`;
+    } else {
+      urlParams = '/recipes';
+    }
+    const loadingRecipes = fetch((`${this.baseUrl}${urlParams}`), {
       headers: this.headers,
     });
     const response = await loadingRecipes;
@@ -48,20 +54,41 @@ class Api {
     });
   }
 
-  async postRecipe(recipe, formElem) {
-    const image = formElem.get('file');
-    console.log(image);
-    console.log(image);
+  async postRecipe(recipe, formElem, token) {
     const loadingResponse = fetch((`${this.baseUrl}/recipes2/`), {
       method: 'POST',
-      // headers: this.headers,
-      // body: JSON.stringify(recipe),
+      headers: {
+        Authorization: `Token ${token}`,
+      },
       body: formElem,
     });
     const response = await loadingResponse;
     const responseData = await response.json();
     if (!response.ok) {
-      return Promise.reject(`Ошибка: ${responseData.message}`);
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async getFavoriteAuthors() {
+    const loadingResponse = fetch((`${this.baseUrl}/follow/`), {
+      method: 'GET',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
     }
     return new Promise((resolve) => {
       resolve(responseData);

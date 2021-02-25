@@ -6,13 +6,16 @@ from .views import (
     RecipeAPIView,
     UserCreateAPIView,
     UserView,
-    ChangePasswordView
+    ChangePasswordView,
+    FollowListCreateAPIView,
+    FollowDestroyAPIView
 )
 from rest_framework.authtoken import views
 
 router = DefaultRouter()
 router.register(r'ingredients', IngredientViewSet, basename='ingredients')
 router.register(r'recipes', RecipeViewSet, basename='recipes')
+
 
 urlpatterns = [
     path('v1/', include(router.urls)),
@@ -21,4 +24,6 @@ urlpatterns = [
     path('v1/signup/', UserCreateAPIView.as_view()),
     path('v1/users/me/', UserView.as_view()),
     path('v1/change-password/', ChangePasswordView.as_view()),
+    path('v1/follow/', FollowListCreateAPIView.as_view()),
+    path('v1/unfollow/', FollowDestroyAPIView.as_view())
 ]

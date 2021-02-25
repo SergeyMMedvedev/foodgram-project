@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from rest_framework import status
-from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView
+from rest_framework import status, mixins, viewsets
+from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, ListCreateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.views import APIView
-from rest_framework.viewsets import ModelViewSet
-from .models import Ingredient, Recipe, Tag
+from rest_framework.viewsets import ModelViewSet, generics
+from .models import Ingredient, Recipe, Tag, Follow
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
     UserSerializer,
-    ChangePasswordSerializer
+    ChangePasswordSerializer,
+    FollowSerializer
 )
 from rest_framework.parsers import MultiPartParser, FileUploadParser, FormParser
 from django.views.decorators.csrf import csrf_exempt
@@ -38,6 +39,7 @@ class ChangePasswordView(UpdateAPIView):
         return obj
 
     def update(self, request, *args, **kwargs):
+        print(request.data)
         self.object = self.get_object()
         serializer = self.get_serializer(data=request.data)
 
@@ -117,7 +119,7 @@ class IngredientViewSet(ModelViewSet):
 
 class RecipeAPIView(APIView):
     parser_classes = (FormParser, MultiPartParser)
-    # permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, ]
 
 
     def post(self, request):
@@ -138,13 +140,18 @@ class RecipeAPIView(APIView):
                 amount=request_ingredient.get('amount'),
                 units=request_ingredient.get('units'))[0])
             # print(request_ingredient)
-
+        print(self.request.user)
+        author = get_object_or_404(User, username=self.request.user)
+        print(author)
         tags = Tag.objects.filter(name__in=request_tags)
         serializer = RecipeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(ingredient=ingredients, tag=tags)
+            serializer.save(ingredient=ingredients,
+                            tag=tags,
+                            author=author)
             return Response(serializer.data)
-        return Response(serializer.errors)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response('response')
 
     def get(self, request):
@@ -176,7 +183,52 @@ class RecipeViewSet(ModelViewSet):
         # ingredients = Ingredient.objects.filter(
         #         name__in=names,
         #         units__in=units)
+        print('self.request.user', self.request.user)
         tags = Tag.objects.filter(name__in=request_tags)
-        serializer.save(ingredient=ingredients, tag=tags)
+        serializer.save(
+            ingredient=ingredients,
+            tag=tags,
+            author=self.request.user)
+
+    def get_queryset(self):
+        print('self.request.query_params.get(author)', self.request.query_params.get('author'))
+        if self.request.query_params.get('author'):
+
+            author_name = self.request.query_params.get('author')
+            print('author_name', author_name)
+            author = get_object_or_404(User, username=author_name)
+            print('author', author)
+            queryset = Recipe.objects.filter(author=author)
+            print('queryset', queryset)
+        else:
+            queryset = Recipe.objects.all()
+        return queryset
 
 
+class FollowListCreateAPIView(ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FollowSerializer
+    model = Follow
+
+    def get_queryset(self):
+        queryset = Follow.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+        author = get_object_or_404(User,
+                                   username=self.request.data.get('author'))
+        serializer.save(user=self.request.user,
+                        author=author)
+
+
+class FollowDestroyAPIView(DestroyAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FollowSerializer
+    model = Follow
+
+    def get_object(self):
+        user = self.request.user
+        author = get_object_or_404(User,
+                                   username=self.request.data.get('author'))
+        obj = get_object_or_404(Follow, user=user, author=author)
+        return obj

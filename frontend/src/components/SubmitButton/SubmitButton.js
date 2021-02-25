@@ -2,21 +2,23 @@ import React from 'react';
 import './SubmitButton.css';
 import cn from 'classnames';
 
-function Button({
+function SubmitButton({
   text,
   blue,
   lightBlue,
   sizeAuto,
+  disabled,
 }) {
   const buttonClassBame = cn(
-    'button',
-    { 'button_style_light-blue': lightBlue },
-    { button_size_auto: sizeAuto },
-    { button_style_blue: blue },
+    'submit-button',
+    { 'submit-button_style_light-blue': lightBlue },
+    { 'submit-button_size_auto': sizeAuto },
+    { 'submit-button_style_blue': blue },
+    { 'submit-button_disabled': disabled },
   );
   return (
-    <input type="submit" className={buttonClassBame} name="subscribe" value={text} />
+    <input type="submit" className={buttonClassBame} name="subscribe" value={text} disabled={disabled} />
   );
 }
 
-export default Button;
+export default SubmitButton;

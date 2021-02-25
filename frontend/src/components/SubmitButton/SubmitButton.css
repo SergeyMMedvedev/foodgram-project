@@ -1,4 +1,4 @@
-.button {
+.submit-button {
   font-family: 'Montserrat', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -19,54 +19,65 @@
   display: flex;
   align-items: center;
 }
-.button:active {
+
+.submit-button:active {
   box-shadow: 0 0 7px #ddd;
 }
 
-.button__icon {
+.submit-button__icon {
   margin-right: 13px;
 }
 
-.button_style_blue {
+.submit-button_style_blue {
   background: #4A61DD;
   color: #FFFFFF;
   transition: background 0.2s;
 }
-.button_style_blue:hover {
+.submit-button_style_blue:hover {
   background: #2845DF;
 }
 
-.button_style_light-blue-outline {
+.submit-button_style_light-blue-outline {
   color: #4A61DD;
   border: 1px solid #DEE2F2;
   background: #fff;
 }
-.button_style_light-blue-outline:hover {
+.submit-button_style_light-blue-outline:hover {
   background: #f8f8f8;
 }
 
-.button_style_light-blue {
+.submit-button_style_light-blue {
   background: #F0F3FF;
   color: #4A61DD;
 }
-.button_style_light-blue:hover {
+.submit-button_style_light-blue:hover {
   background: #D8DEFF;
   color: #4A61DD;
 }
 
-.button_style_none {
+.submit-button_style_none {
   padding: 0;
 }
-.button_style_none:active {
+.submit-button_style_none:active {
   box-shadow: none;
 }
 
-.button_size_auto {
+.submit-button_size_auto {
   height: 100%;
   width: 100%;
 }
 
-.button_size_subscribe {
+.submit-button_size_subscribe {
   padding: 17px 18px;
   width: 215px;
+}
+
+.submit-button_disabled {
+  background-color: #cfcfcf;
+  color: #a8a8a8;
+}
+
+.submit-button_disabled:hover {
+  background-color: #cfcfcf;
+  color: #a8a8a8;
 }

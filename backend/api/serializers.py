@@ -1,9 +1,10 @@
 from rest_framework import serializers
-from .models import Ingredient, Recipe, Tag
+from .models import Ingredient, Recipe, Tag, Follow
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
+from django.shortcuts import get_object_or_404
 
 User = get_user_model()
 
@@ -85,9 +86,9 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
-    units = serializers.CharField()
-    amount = serializers.IntegerField()
+    name = serializers.CharField(required=True)
+    units = serializers.CharField(required=True)
+    amount = serializers.IntegerField(required=True)
 
     class Meta:
         fields = ('id', 'name', 'amount', 'units')
@@ -95,7 +96,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    name = serializers.CharField()
+    name = serializers.CharField(required=True)
 
     class Meta:
         fields = ('name',)
@@ -107,15 +108,44 @@ class RecipeSerializer(serializers.ModelSerializer):
         read_only=True,
         slug_field='username'
     )
-    name = serializers.CharField()
+    name = serializers.CharField(min_length=2, max_length=50, required=True)
     image = serializers.ImageField(max_length=None,
-                                   required=False,
-                                   allow_empty_file=True,
+                                   required=True,
+                                   allow_empty_file=False,
                                    use_url=True)
-    ingredient = IngredientSerializer(many=True, read_only=True)
+    ingredient = IngredientSerializer(many=True, read_only=True,)
     tag = TagSerializer(many=True, read_only=True)
-    cooking_time = serializers.IntegerField(max_value=1440)
+    cooking_time = serializers.IntegerField(max_value=1440, required=True)
 
     class Meta:
         fields = '__all__'
         model = Recipe
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    # user = UserSerializer(read_only=True)
+    # author = UserSerializer(many=True, read_only=True)
+    # user = serializers.CharField()
+    # author = serializers.CharField()
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    author = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+
+    def validate(self, attrs):
+        if self.context.get('request').method == 'POST':
+            author_username = self.context.get('request').data.get('author')
+            author = get_object_or_404(User, username=author_username)
+            user = self.context.get('request').user
+            if Follow.objects.filter(user=user, author=author):
+                raise serializers.ValidationError(
+                    'Вы уже подписаны на этого автора')
+        return attrs
+
+    class Meta:
+        fields = '__all__'
+        model = Follow

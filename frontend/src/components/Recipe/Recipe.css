@@ -10,7 +10,7 @@
 .recipe__image {
   width: 72px;
   height: 72px;
-  grid-area: image;
+  /* grid-area: image; */
   border-radius: 50%;
 }
 
@@ -46,10 +46,18 @@
   color: #000000;
   margin: 10px 0 13px;
 
-  grid-area: title;
+  /* grid-area: title; */
 }
 
 .recipe_reverse {
   grid-template-areas: 'image title'
   'image text';
+}
+
+.recipe__title-link {
+  grid-area: title;
+}
+
+.recipe__image-link {
+  grid-area: image;
 }

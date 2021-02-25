@@ -33,6 +33,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recipes, setRecipes] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
+  const [serverError, setServerError] = useState('');
+  const [userFavoriteAuthors, setUserFavoriteAuthors] = useState([]);
 
   function renderMainHeader(header) {
     return (
@@ -49,17 +51,36 @@ function App() {
         if (newUserInfo.token) {
           localStorage.setItem('token', newUserInfo.token);
           api.headers.Authorization = `Token ${newUserInfo.token}`;
+          auth.headers.Authorization = `Token ${newUserInfo.token}`;
           setCurrentUser({
             name: newUserInfo.first_name,
             username: newUserInfo.username,
             email: newUserInfo.email,
           });
           setIsLoggedIn(true);
+          setServerError('');
           history.push('/');
         }
       })
       .catch((err) => {
+        setServerError(err);
         console.log(err);
+      });
+  }
+
+  function handlePasswordChange(oldPassword, newPassword, newPasswordAgain) {
+    auth.changePassword(oldPassword, newPassword, newPasswordAgain)
+      .then((data) => {
+        console.log(data);
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        setCurrentUser({});
+        setServerError('');
+        history.push('/signin');
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerError(err);
       });
   }
 
@@ -71,7 +92,9 @@ function App() {
   }
 
   function tokenCheck() {
+    console.log('start tokenCheck');
     const token = localStorage.getItem('token');
+    console.log(token);
     if (token) {
       auth.getContent(token)
         .then((user) => {
@@ -81,8 +104,14 @@ function App() {
               username: user.username,
               email: user.email,
             });
-            setIsLoggedIn(true);
+            console.log(currentUser);
+            setServerError('');
             api.headers.Authorization = `Token ${token}`;
+            console.log(api.headers.Authorization);
+            auth.headers.Authorization = `Token ${token}`;
+            console.log(auth.headers.Authorization);
+            console.log('end tokenCheck');
+            setIsLoggedIn(true);
           }
         })
         .catch((e) => {
@@ -100,6 +129,7 @@ function App() {
   }
 
   useEffect(() => {
+    setIsLoggedIn(false);
     tokenCheck();
   }, []);
 
@@ -111,29 +141,48 @@ function App() {
             .then((user) => {
               localStorage.setItem('token', data.token);
               api.headers.Authorization = `Token ${data.token}`;
+              auth.headers.Authorization = `Token ${data.token}`;
               setCurrentUser({
                 name: user.first_name,
                 username: user.username,
                 email: user.email,
               });
               setIsLoggedIn(true);
+              setServerError('');
               history.push('/');
             });
         }
       })
       .catch((e) => {
         console.log(e);
+        setServerError(e);
       });
   }
 
-  function handleRecipeSubmit(recipe, formElem) {
+  function handleRecipeSubmit(recipe, formElem, token) {
     console.log('app handleRecipeSubmit');
     console.log('recipe.ingredient', recipe.ingredient);
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
-    api.postRecipe(recipe, formElem)
+    api.postRecipe(recipe, formElem, token)
       .then((respose) => {
-        console.log(respose);
+        console.log('respose', respose);
+        setServerError('');
+        window.location.assign('/');
+      })
+      .catch((err) => {
+        console.log('handleRecipeSubmit', err);
+        setServerError(err);
+      });
+  }
+
+  function getFavoriteAuthors() {
+    console.log('getFavoriteAuthors');
+    console.log(api.headers.Authorization);
+    api.getFavoriteAuthors()
+      .then((authors) => {
+        console.log(authors);
+        setUserFavoriteAuthors(authors);
       })
       .catch((err) => {
         console.log(err);
@@ -149,6 +198,17 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
+  }, [isLoggedIn]);
+
+  useEffect(() => {
+    console.log('isLoggedIn: ', isLoggedIn);
+    if (isLoggedIn) {
+      console.log('Authorization');
+      console.log(localStorage.getItem('token'));
+      console.log(api.headers.Authorization);
+      console.log(api.headers);
+      getFavoriteAuthors();
+    }
   }, [isLoggedIn]);
 
   return (
@@ -172,6 +232,7 @@ function App() {
               {renderMainHeader('Регистрация')}
               <FormReg
                 onSubmit={handleRegistrationSubmit}
+                serverError={serverError}
               />
             </Route>
 
@@ -179,6 +240,7 @@ function App() {
               {renderMainHeader('Войти на сайт')}
               <FormAuth
                 onSubmit={handleLoginSubmit}
+                serverError={serverError}
               />
             </Route>
 
@@ -189,18 +251,25 @@ function App() {
 
             <Route path="/change-password">
               {renderMainHeader('Изменить пароль')}
-              <FormChangePassword />
+              <FormChangePassword
+                onSubmit={handlePasswordChange}
+                serverError={serverError}
+              />
             </Route>
 
             <Route path="/my-follow">
               {renderMainHeader('Мои подписки')}
-              <MyFollow />
+              <MyFollow
+                userFavoriteAuthors={userFavoriteAuthors}
+                getFavoriteAuthors={getFavoriteAuthors}
+              />
             </Route>
 
             <Route path="/form-recipe">
               {renderMainHeader('Создание рецепта')}
               <FormRecipe
                 onSubmit={handleRecipeSubmit}
+                serverError={serverError}
               />
             </Route>
 

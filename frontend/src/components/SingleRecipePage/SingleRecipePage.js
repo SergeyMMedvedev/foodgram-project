@@ -23,7 +23,7 @@ function SingleRecipePage() {
   function renderIngredients(ingredients) {
     if (ingredients) {
       return ingredients.map((ingredient) => (
-        <p className=" single-card__section-item">
+        <p className=" single-card__section-item" key={ingredient.id}>
           {`${ingredient.name} - ${ingredient.amount} ${ingredient.units}.`}
         </p>
       ));

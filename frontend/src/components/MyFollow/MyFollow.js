@@ -3,16 +3,18 @@ import './MyFollow.css';
 import CardList from '../CardList/CardList';
 import CardUser from '../CardUser/CardUser';
 import Pagination from '../Pagination/Pagination';
+// import api from '../../utils/Api';
 
-function MyFollow() {
+function MyFollow({ userFavoriteAuthors }) {
   return (
     <>
       <CardList>
-        <CardUser />
-        <CardUser />
-        <CardUser />
-        <CardUser />
-        <CardUser />
+        {userFavoriteAuthors.map((author) => (
+          <CardUser
+            key={author.id}
+            author={author}
+          />
+        ))}
       </CardList>
       <Pagination />
     </>
