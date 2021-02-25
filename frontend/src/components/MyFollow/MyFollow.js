@@ -5,14 +5,14 @@ import CardUser from '../CardUser/CardUser';
 import Pagination from '../Pagination/Pagination';
 // import api from '../../utils/Api';
 
-function MyFollow({ userFavoriteAuthors }) {
+function MyFollow({ subscriptions }) {
   return (
     <>
       <CardList>
-        {userFavoriteAuthors.map((author) => (
+        {subscriptions.map((subscription) => (
           <CardUser
-            key={author.id}
-            author={author}
+            key={subscription.id}
+            subscription={subscription}
           />
         ))}
       </CardList>

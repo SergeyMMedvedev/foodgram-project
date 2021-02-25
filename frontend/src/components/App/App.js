@@ -34,7 +34,7 @@ function App() {
   const [recipes, setRecipes] = useState([]);
   const [currentUser, setCurrentUser] = useState({});
   const [serverError, setServerError] = useState('');
-  const [userFavoriteAuthors, setUserFavoriteAuthors] = useState([]);
+  const [subscriptions, setSubscriptions] = useState([]);
 
   function renderMainHeader(header) {
     return (
@@ -70,8 +70,7 @@ function App() {
 
   function handlePasswordChange(oldPassword, newPassword, newPasswordAgain) {
     auth.changePassword(oldPassword, newPassword, newPasswordAgain)
-      .then((data) => {
-        console.log(data);
+      .then(() => {
         localStorage.removeItem('token');
         setIsLoggedIn(false);
         setCurrentUser({});
@@ -92,9 +91,7 @@ function App() {
   }
 
   function tokenCheck() {
-    console.log('start tokenCheck');
     const token = localStorage.getItem('token');
-    console.log(token);
     if (token) {
       auth.getContent(token)
         .then((user) => {
@@ -104,13 +101,9 @@ function App() {
               username: user.username,
               email: user.email,
             });
-            console.log(currentUser);
             setServerError('');
             api.headers.Authorization = `Token ${token}`;
-            console.log(api.headers.Authorization);
             auth.headers.Authorization = `Token ${token}`;
-            console.log(auth.headers.Authorization);
-            console.log('end tokenCheck');
             setIsLoggedIn(true);
           }
         })
@@ -160,8 +153,6 @@ function App() {
   }
 
   function handleRecipeSubmit(recipe, formElem, token) {
-    console.log('app handleRecipeSubmit');
-    console.log('recipe.ingredient', recipe.ingredient);
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
     api.postRecipe(recipe, formElem, token)
@@ -176,13 +167,32 @@ function App() {
       });
   }
 
-  function getFavoriteAuthors() {
-    console.log('getFavoriteAuthors');
-    console.log(api.headers.Authorization);
-    api.getFavoriteAuthors()
-      .then((authors) => {
-        console.log(authors);
-        setUserFavoriteAuthors(authors);
+  function getSubscriptions() {
+    api.getSubscriptions()
+      .then((subscriptionsData) => {
+        setSubscriptions(subscriptionsData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function handleSubscribe(author, setIsUserisSubscribed) {
+    api.subscribe(author)
+      .then(() => {
+        setIsUserisSubscribed(true);
+        getSubscriptions();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function handleUnsubscribe(subscriptionId, setIsUserisSubscribed) {
+    api.unsubscribe(subscriptionId)
+      .then(() => {
+        getSubscriptions();
+        setIsUserisSubscribed(false);
       })
       .catch((err) => {
         console.log(err);
@@ -193,7 +203,6 @@ function App() {
     api.getRecipes()
       .then((data) => {
         setRecipes(data);
-        console.log(data);
       })
       .catch((err) => {
         console.log(err);
@@ -201,13 +210,8 @@ function App() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    console.log('isLoggedIn: ', isLoggedIn);
     if (isLoggedIn) {
-      console.log('Authorization');
-      console.log(localStorage.getItem('token'));
-      console.log(api.headers.Authorization);
-      console.log(api.headers);
-      getFavoriteAuthors();
+      getSubscriptions();
     }
   }, [isLoggedIn]);
 
@@ -260,8 +264,8 @@ function App() {
             <Route path="/my-follow">
               {renderMainHeader('Мои подписки')}
               <MyFollow
-                userFavoriteAuthors={userFavoriteAuthors}
-                getFavoriteAuthors={getFavoriteAuthors}
+                subscriptions={subscriptions}
+                getSubscriptions={getSubscriptions}
               />
             </Route>
 
@@ -284,7 +288,11 @@ function App() {
             </Route>
 
             <Route path="/single-page/:recipeId">
-              <SingleRecipePage />
+              <SingleRecipePage
+                onSubscribe={handleSubscribe}
+                onUnsubscribe={handleUnsubscribe}
+                subscriptions={subscriptions}
+              />
             </Route>
 
             <Route>

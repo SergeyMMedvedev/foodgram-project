@@ -215,6 +215,7 @@ class FollowListCreateAPIView(ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
+        print(self.request.data)
         author = get_object_or_404(User,
                                    username=self.request.data.get('author'))
         serializer.save(user=self.request.user,
@@ -225,10 +226,4 @@ class FollowDestroyAPIView(DestroyAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = FollowSerializer
     model = Follow
-
-    def get_object(self):
-        user = self.request.user
-        author = get_object_or_404(User,
-                                   username=self.request.data.get('author'))
-        obj = get_object_or_404(Follow, user=user, author=author)
-        return obj
+    queryset = Follow.objects.all()

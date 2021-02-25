@@ -24,6 +24,6 @@ urlpatterns = [
     path('v1/signup/', UserCreateAPIView.as_view()),
     path('v1/users/me/', UserView.as_view()),
     path('v1/change-password/', ChangePasswordView.as_view()),
-    path('v1/follow/', FollowListCreateAPIView.as_view()),
-    path('v1/unfollow/', FollowDestroyAPIView.as_view())
+    path('v1/subscriptions/', FollowListCreateAPIView.as_view()),
+    path('v1/subscriptions/<int:pk>/', FollowDestroyAPIView.as_view())
 ]

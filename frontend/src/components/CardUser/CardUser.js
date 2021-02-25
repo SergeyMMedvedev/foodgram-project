@@ -4,11 +4,11 @@ import Recipe from '../Recipe/Recipe';
 import api from '../../utils/Api';
 import getNumberEnding from '../../utils/getEndingsOfNumber';
 
-function CardUser({ author }) {
+function CardUser({ subscription }) {
   const [recipesList, setRecipesList] = useState([]);
 
   useEffect(() => {
-    api.getRecipes(author.author)
+    api.getRecipes(subscription.author)
       .then((recipes) => {
         setRecipesList(recipes);
       })
@@ -20,9 +20,9 @@ function CardUser({ author }) {
   return (
     <>
       {recipesList.length > 0 && (
-        <div className="card-user" data-author={author.id}>
+        <div className="card-user" data-author={subscription.id}>
           <div className="card-user__header">
-            <h2 className="card-user__title">{author.author}</h2>
+            <h2 className="card-user__title">{subscription.author}</h2>
           </div>
           <div className="card-user__body">
             <ul className="card-user__items">

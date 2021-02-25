@@ -1,14 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import './SingleRecipePage.css';
 import testCardImg from '../../images/testCardImg.png';
 import api from '../../utils/Api';
 import renderTags from '../../utils/renderTags';
+import CurrentUserContext from '../../context/CurrentUserContext';
 
-function SingleRecipePage() {
+function SingleRecipePage({
+  onSubscribe,
+  subscriptions,
+  onUnsubscribe,
+}) {
   const { recipeId } = useParams();
-
   const [recipe, setRecipe] = useState({});
+  const [isUserisSubscribed, setIsUserisSubscribed] = useState(false);
+  const currentUser = useContext(CurrentUserContext);
+
+  function handleSubscribe() {
+    onSubscribe(recipe.author, setIsUserisSubscribed);
+  }
+
+  function handleUnSubscribe() {
+    const currentSubscription = subscriptions.find((subscription) => (
+      subscription.author === recipe.author
+    ));
+    onUnsubscribe(currentSubscription.id, setIsUserisSubscribed);
+  }
 
   useEffect(() => {
     api.getRecipe(recipeId)
@@ -20,6 +37,15 @@ function SingleRecipePage() {
       });
   }, [recipeId]);
 
+  useEffect(() => {
+    if (recipe.author) {
+      const userFavoriteAuthorsNames = subscriptions.map((author) => (
+        author.author
+      ));
+      setIsUserisSubscribed(userFavoriteAuthorsNames.includes(recipe.author));
+    }
+  }, [recipe, subscriptions]);
+
   function renderIngredients(ingredients) {
     if (ingredients) {
       return ingredients.map((ingredient) => (
@@ -29,6 +55,40 @@ function SingleRecipePage() {
       ));
     }
     return <p className=" single-card__section-item">загрузка</p>;
+  }
+
+  function renderSubscribeButton() {
+    if (currentUser.name !== recipe.author) {
+      if (isUserisSubscribed) {
+        return (
+          <li className="single-card__item">
+            <button
+              type="button"
+              className="button button_style_light-blue button_size_subscribe"
+              name="subscribe"
+              data-out
+              onClick={handleUnSubscribe}
+            >
+              Отписаться
+            </button>
+          </li>
+        );
+      }
+      return (
+        <li className="single-card__item">
+          <button
+            type="button"
+            className="button button_style_light-blue button_size_subscribe"
+            name="subscribe"
+            data-out
+            onClick={handleSubscribe}
+          >
+            Подписаться на автора
+          </button>
+        </li>
+      );
+    }
+    return <li className="single-card__item"><div className="button_size_subscribe" /></li>;
   }
 
   return (
@@ -71,7 +131,7 @@ function SingleRecipePage() {
               Добавить в покупки
             </button>
           </li>
-          <li className="single-card__item"><button type="button" className="button button_style_light-blue button_size_subscribe" name="subscribe" data-out>Подписаться на автора</button></li>
+          {renderSubscribeButton()}
         </ul>
         <div className="single-card__section">
           <h3 className="single-card__section-title">Ингридиенты:</h3>

@@ -1,6 +1,7 @@
 .single-card {
   display: flex;
   justify-content: space-between;
+  max-width: fit-content;
 }
 
 .single-card__favorite {

@@ -141,6 +141,9 @@ class FollowSerializer(serializers.ModelSerializer):
             author_username = self.context.get('request').data.get('author')
             author = get_object_or_404(User, username=author_username)
             user = self.context.get('request').user
+            if user == author:
+                raise serializers.ValidationError(
+                    'Нельзя подписаться на самого себя')
             if Follow.objects.filter(user=user, author=author):
                 raise serializers.ValidationError(
                     'Вы уже подписаны на этого автора')

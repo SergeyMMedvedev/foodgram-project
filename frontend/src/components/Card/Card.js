@@ -17,7 +17,7 @@ function Card({
         <img src={testCardImg} alt={recipeName} className="card__image" />
       </Link>
       <div className="card__body">
-        <Link className="card__title link" to="/single-page">{recipeName}</Link>
+        <Link className="card__title link" to={`/single-page/${recipeId}`}>{recipeName}</Link>
         <ul className="card__items">
           {renderTags(tags)}
         </ul>

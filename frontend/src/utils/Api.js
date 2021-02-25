@@ -76,8 +76,8 @@ class Api {
     });
   }
 
-  async getFavoriteAuthors() {
-    const loadingResponse = fetch((`${this.baseUrl}/follow/`), {
+  async getSubscriptions() {
+    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/`), {
       method: 'GET',
       headers: this.headers,
     });
@@ -92,6 +92,43 @@ class Api {
     }
     return new Promise((resolve) => {
       resolve(responseData);
+    });
+  }
+
+  async subscribe(author) {
+    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/`), {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        author,
+      }),
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async unsubscribe(id) {
+    console.log('unsubscribe');
+    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/${id}/`), {
+      method: 'DELETE',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    if (!response.status === 204) {
+      return Promise.reject(`Ошибка! ${response}`);
+    }
+    return new Promise((resolve) => {
+      resolve(response.status);
     });
   }
 }
