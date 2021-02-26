@@ -15,11 +15,16 @@ function Card({
   author,
   onAddToFavorites,
   onDeleteFromFavorites,
+  onAddPurchase,
 }) {
   const favoriteRecipes = useContext(CurrentFavoriteRecipes);
   const favoriteData = useContext(CurrentFavoritesData);
 
   const [isCardFavorite, setIsCardFavorite] = useState(false);
+
+  function handleAddToPurchase() {
+    onAddPurchase(recipeId);
+  }
 
   function handleAddToFavorites() {
     onAddToFavorites(recipeId);
@@ -70,7 +75,7 @@ function Card({
         </div>
       </div>
       <div className="card__footer">
-        <button type="button" className="button button_style_light-blue" name="purchases" data-out>
+        <button onClick={handleAddToPurchase} type="button" className="button button_style_light-blue" name="purchases" data-out>
           <span className="icon-plus button__icon" />
           Добавить в покупки
         </button>

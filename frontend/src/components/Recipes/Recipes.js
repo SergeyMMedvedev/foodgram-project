@@ -8,7 +8,7 @@ function Recipes({
   recipes,
   onAddToFavorites,
   onDeleteFromFavorites,
-  // favoriteData,
+  onAddPurchase,
 }) {
   return (
     <>
@@ -24,7 +24,7 @@ function Recipes({
             author={recipe.author}
             onAddToFavorites={onAddToFavorites}
             onDeleteFromFavorites={onDeleteFromFavorites}
-            // favoriteData={favoriteData}
+            onAddPurchase={onAddPurchase}
           />
         ))}
       </CardList>

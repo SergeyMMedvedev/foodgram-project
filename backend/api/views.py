@@ -1,16 +1,22 @@
 from django.shortcuts import render
+import os
+from wsgiref.util import FileWrapper
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import HttpResponse
 from rest_framework import status, mixins, viewsets
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIView, ListCreateAPIView, DestroyAPIView, ListAPIView
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, generics
-from .models import Ingredient, Recipe, Tag, Follow, Favorite
+from rest_framework.decorators import api_view, permission_classes, action
+from .models import Ingredient, Recipe, Tag, Follow, Favorite, Purchase
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
     UserSerializer,
     ChangePasswordSerializer,
     FollowSerializer,
-    FavoriteSerializer
+    FavoriteSerializer,
+    PurchaseSerializer,
 )
 from rest_framework.parsers import MultiPartParser, FileUploadParser, FormParser
 from django.views.decorators.csrf import csrf_exempt
@@ -250,3 +256,71 @@ class FavoriteAPIView(mixins.CreateModelMixin,
 
         serializer.save(user=self.request.user,
                         favorite=recipe)
+
+
+class PurchaseAPIView(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
+    queryset = Purchase.objects.all()
+    serializer_class = PurchaseSerializer
+    permission_classes = [IsAuthenticated, ]
+
+    def get_queryset(self):
+        queryset = Purchase.objects.filter(user=self.request.user)
+        return queryset
+
+    def perform_create(self, serializer):
+
+        recipe = get_object_or_404(Recipe,
+                                   pk=self.request.data.get('purchase'))
+
+        serializer.save(user=self.request.user,
+                        purchase=recipe)
+
+
+# @csrf_exempt
+# @action(detail=True, methods=['post'])
+# def download_purchases(request, *args, **kwargs):
+#     # short_report = open("somePdfFile", 'rb')
+#     # response = HttpResponse(FileWrapper(short_report), content_type="text/xml; charset=utf-8")
+#     print(request.input)
+#     message = '!sdf'
+#     with open("./temp_files/file.txt", 'w+') as f:
+#         f.write(message)
+#     with open("./temp_files/file.txt", 'r') as f:
+#         file_text = f.read().strip()
+#         print(file_text)
+#     file_text = open("./temp_files/file.txt", 'rb')
+#     print(file_text)
+#
+#     response = HttpResponse(FileWrapper(file_text),
+#                             content_type='application/text charset=utf-8')
+#     response['Content-Disposition'] = 'attachment; filename="file_text.txt"'
+#     if os.path.isfile('/temp_files/file.txt'):
+#         os.remove('/temp_files/file.txt')
+#     return response
+
+
+@api_view(http_method_names=['POST'])
+@permission_classes((IsAuthenticated, ))
+def download_purchases(request, *args, **kwargs):
+    ingredients = {}
+    for item in request.data:
+        for ingredient in item['purchase']['ingredient']:
+            if (f"{ingredient['name']} ({ingredient['units']})" in ingredients.keys()):
+                ingredients[f"{ingredient['name']} ({ingredient['units']})"] += ingredient['amount']
+            else:
+                ingredients[f"{ingredient['name']} ({ingredient['units']})"] = ingredient['amount']
+
+    with open("./temp_files/file.txt", 'w+') as f:
+        for key in ingredients.keys():
+            f.write(f"{key} — {ingredients[key]}\n")
+
+    file_text = open("./temp_files/file.txt", 'rb')
+    response = HttpResponse(FileWrapper(file_text),
+                            content_type='application/text charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="file_text.txt"'
+    if os.path.isfile('./temp_files/file.txt'):
+        os.remove('./temp_files/file.txt')
+    return response

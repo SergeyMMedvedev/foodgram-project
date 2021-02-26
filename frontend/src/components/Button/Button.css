@@ -71,3 +71,13 @@
   width: 215px;
   justify-content: center;
 }
+
+.button_disabled {
+  background-color: #cfcfcf;
+  color: #a8a8a8;
+}
+
+.button_disabled:hover {
+  background-color: #cfcfcf;
+  color: #a8a8a8;
+}

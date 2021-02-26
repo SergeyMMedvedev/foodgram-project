@@ -8,7 +8,7 @@ import { CurrentFavoriteRecipes } from '../../context/CurrentFavoriteRecipesCont
 function Favorite({
   onAddToFavorites,
   onDeleteFromFavorites,
-  // favoriteData,
+  onAddPurchase,
 }) {
   const recipes = useContext(CurrentFavoriteRecipes);
 
@@ -25,7 +25,7 @@ function Favorite({
             author={recipe.author}
             onAddToFavorites={onAddToFavorites}
             onDeleteFromFavorites={onDeleteFromFavorites}
-            // favoriteData={favoriteData}
+            onAddPurchase={onAddPurchase}
           />
         ))}
       </CardList>

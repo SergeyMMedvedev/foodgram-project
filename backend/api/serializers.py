@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Ingredient, Recipe, Tag, Follow, Favorite
+from .models import Ingredient, Recipe, Tag, Follow, Favorite, Purchase
 from django.contrib.auth import get_user_model
 from rest_framework.validators import UniqueValidator
 from django.core import exceptions
@@ -176,3 +176,15 @@ class FavoriteSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Favorite
+
+
+class PurchaseSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(
+        read_only=True,
+        slug_field='username'
+    )
+    purchase = RecipeSerializer(read_only=True)
+
+    class Meta:
+        fields = '__all__'
+        model = Purchase

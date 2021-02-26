@@ -38,7 +38,8 @@ function App() {
   const [currentFavoritesData, setCurrentFavoritesData] = useState([]);
   const [serverError, setServerError] = useState('');
   const [subscriptions, setSubscriptions] = useState([]);
-  // const [favoriteRecipes, setFavoriteRecipes] = useState([]);
+  const [purchases, setPurchases] = useState([]);
+  const [purchasesRecipes, setPurchasesRecipes] = useState([]);
 
   function renderMainHeader(header) {
     return (
@@ -222,6 +223,48 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  function getPurchases() {
+    api.getPurchases()
+      .then((purchasesData) => {
+        const purchasesRiceps = [];
+        purchasesData.forEach((item) => (
+          purchasesRiceps.push(item.purchase)
+        ));
+        setPurchases(purchasesData);
+        setPurchasesRecipes(purchasesRiceps);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      getPurchases();
+    }
+  }, [isLoggedIn]);
+
+  function handleAddToPurchase(recipeId) {
+    api.addPurchase(recipeId)
+      .then(() => {
+        getPurchases();
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  function handleDeletePurchase(purchaseId) {
+    api.deletePurchase(purchaseId)
+      .then(() => {
+        getPurchases();
+        console.log('покупка удалена');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   function handleAddToFavorites(recipeId) {
     api.addToFavoritesRecipes(recipeId)
       .then(() => {
@@ -258,6 +301,26 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  function handleDownloadClick(downloadPurchases) {
+    api.download(downloadPurchases)
+      .then((response) => {
+        console.log(response);
+        // window.navigator.msSaveBlob(response, 'filename');
+
+        function downloadAsFile(data) {
+          const a = document.createElement('a');
+          const file = new Blob([data], { type: 'application/text' });
+          a.href = URL.createObjectURL(file);
+          a.download = 'example.txt';
+          a.click();
+        }
+        downloadAsFile(response);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return (
     <>
       <CurrentFavoritesData.Provider value={currentFavoritesData}>
@@ -266,6 +329,7 @@ function App() {
             <Header
               isLoggedIn={isLoggedIn}
               onExit={handleExit}
+              purchasesRecipes={purchasesRecipes}
             />
             <main className="main container">
 
@@ -276,6 +340,7 @@ function App() {
                     recipes={recipes}
                     onAddToFavorites={handleAddToFavorites}
                     onDeleteFromFavorites={handleRemoveFromFavorites}
+                    onAddPurchase={handleAddToPurchase}
                   />
                 </Route>
 
@@ -329,12 +394,18 @@ function App() {
                   <Favorite
                     onAddToFavorites={handleAddToFavorites}
                     onDeleteFromFavorites={handleRemoveFromFavorites}
+                    onAddPurchase={handleAddToPurchase}
                   />
                 </Route>
 
                 <Route path="/shop-list">
                   {renderMainHeader('Список покупок')}
-                  <ShopList />
+                  <ShopList
+                    purchasesRecipes={purchasesRecipes}
+                    purchases={purchases}
+                    onDeletePurchase={handleDeletePurchase}
+                    onDownload={handleDownloadClick}
+                  />
                 </Route>
 
                 <Route path="/single-page/:recipeId">
@@ -344,6 +415,7 @@ function App() {
                     subscriptions={subscriptions}
                     onAddToFavorites={handleAddToFavorites}
                     onDeleteFromFavorites={handleRemoveFromFavorites}
+                    onAddPurchase={handleAddToPurchase}
                   />
                 </Route>
 

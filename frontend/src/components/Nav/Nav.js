@@ -2,7 +2,7 @@ import React from 'react';
 import './Nav.css';
 import { NavLink } from 'react-router-dom';
 
-function Nav({ isLoggedIn, onExit }) {
+function Nav({ isLoggedIn, onExit, purchasesRecipes }) {
   return (
     <nav className="nav">
       <div className="nav__container container">
@@ -15,7 +15,7 @@ function Nav({ isLoggedIn, onExit }) {
             <li className="nav__item">
               <NavLink to="/shop-list" activeClassName="nav__link_active" className="nav__link link">Список покупок</NavLink>
               <span className="badge badge_style_blue nav__badge" id="counter">
-                4
+                {purchasesRecipes.length || ''}
               </span>
             </li>
           </ul>

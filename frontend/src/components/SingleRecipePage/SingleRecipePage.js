@@ -14,6 +14,7 @@ function SingleRecipePage({
   onUnsubscribe,
   onAddToFavorites,
   onDeleteFromFavorites,
+  onAddPurchase,
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
@@ -22,6 +23,10 @@ function SingleRecipePage({
   const [isCardFavorite, setIsCardFavorite] = useState(false);
   const favoriteRecipes = useContext(CurrentFavoriteRecipes);
   const favoriteData = useContext(CurrentFavoritesData);
+
+  function handleAddToPurchase() {
+    onAddPurchase(recipeId);
+  }
 
   function handleAddToFavorites() {
     onAddToFavorites(recipeId);
@@ -159,7 +164,7 @@ function SingleRecipePage({
         </div>
         <ul className="single-card__items">
           <li className="single-card__item">
-            <button type="button" className="button button_style_blue" name="purchases" data-out>
+            <button onClick={handleAddToPurchase} type="button" className="button button_style_blue" name="purchases" data-out>
               <span className="icon-plus" />
               Добавить в покупки
             </button>

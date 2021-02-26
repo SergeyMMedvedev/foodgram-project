@@ -84,3 +84,17 @@ class Favorite(models.Model):
 
     def __str__(self):
         return f"пользователь {self.user} подписан на {self.favorite}"
+
+
+class Purchase(models.Model):
+    user = models.ForeignKey(User,
+                             on_delete=models.CASCADE,
+                             related_name="customer",
+                             )
+    purchase = models.ForeignKey(Recipe,
+                                 on_delete=models.CASCADE,
+                                 related_name="purchase",
+                                 )
+
+    def __str__(self):
+        return f"пользователь {self.user} покупает {self.purchase}"

@@ -123,8 +123,8 @@ class Api {
       headers: this.headers,
     });
     const response = await loadingResponse;
-    if (!response.status === 204) {
-      return Promise.reject(`Ошибка! ${response}`);
+    if (!(response.status === 204)) {
+      return Promise.reject(`Ошибка! ${response.status}`);
     }
     return new Promise((resolve) => {
       resolve(response.status);
@@ -178,11 +178,84 @@ class Api {
       headers: this.headers,
     });
     const response = await loadingResponse;
-    if (!response.status === 204) {
-      return Promise.reject(`Ошибка! ${response}`);
+    if (!(response.status === 204)) {
+      return Promise.reject(`Ошибка! ${response.status}`);
     }
     return new Promise((resolve) => {
       resolve(response.status);
+    });
+  }
+
+  async getPurchases() {
+    const loadingResponse = fetch((`${this.baseUrl}/purchases/`), {
+      method: 'GET',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async addPurchase(recipeId) {
+    const loadingResponse = fetch((`${this.baseUrl}/purchases/`), {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({
+        purchase: recipeId,
+      }),
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
+  async deletePurchase(id) {
+    const loadingResponse = fetch((`${this.baseUrl}/purchases/${+id}/`), {
+      method: 'DELETE',
+      headers: this.headers,
+    });
+    const response = await loadingResponse;
+    if (!(response.status === 204)) {
+      return Promise.reject(`Ошибка! ${response.status}`);
+    }
+    return new Promise((resolve) => {
+      resolve(response.status);
+    });
+  }
+
+  async download(purchases) {
+    const loadingResponse = fetch((`${this.baseUrl}/download/`), {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify(purchases),
+    });
+    const response = await loadingResponse;
+    console.log(response);
+    const responseData = await response.blob();
+    console.log(responseData);
+    if (!response.ok) {
+      return Promise.reject('Ошибка!');
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
     });
   }
 }

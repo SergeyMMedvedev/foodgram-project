@@ -238,6 +238,7 @@ function FormRecipe({ onSubmit, serverError }) {
               type="number"
               id="cantidad"
               className="form__input"
+              min="1"
               max="999"
             />
             <span htmlFor="cantidad" className="form__label" id="cantidadVal">{nameUnits || 'шт.'}</span>
