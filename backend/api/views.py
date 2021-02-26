@@ -28,7 +28,7 @@ from rest_framework.permissions import (
     IsAuthenticated
 )
 from django.shortcuts import get_object_or_404, get_list_or_404
-
+from rest_framework.pagination import PageNumberPagination
 
 User = get_user_model()
 
@@ -171,6 +171,8 @@ class RecipeAPIView(APIView):
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    pagination_class = PageNumberPagination
+
     # permission_classes = [IsAuthenticated, ]
 
     def perform_create(self, serializer):
@@ -243,6 +245,7 @@ class FavoriteAPIView(mixins.CreateModelMixin,
     queryset = Favorite.objects.all()
     serializer_class = FavoriteSerializer
     permission_classes = [IsAuthenticated, ]
+    # pagination_class = None
 
     def get_queryset(self):
         queryset = Favorite.objects.filter(user=self.request.user)

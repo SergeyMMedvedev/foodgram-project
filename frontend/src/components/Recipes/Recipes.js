@@ -9,6 +9,8 @@ function Recipes({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
+  recipesPagination,
+  getRecipes,
 }) {
   return (
     <>
@@ -28,7 +30,10 @@ function Recipes({
           />
         ))}
       </CardList>
-      <Pagination />
+      <Pagination
+        pagination={recipesPagination}
+        getItems={getRecipes}
+      />
     </>
   );
 }

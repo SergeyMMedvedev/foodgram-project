@@ -33,11 +33,14 @@ function App() {
   const history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recipes, setRecipes] = useState([]);
+  const [recipesPagination, setRecipesPagination] = useState({});
+  const [favoritesPagination, setFavoritesPagination] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [currentFavoriteRecipes, setCurrentFavoriteRecipes] = useState([]);
   const [currentFavoritesData, setCurrentFavoritesData] = useState([]);
   const [serverError, setServerError] = useState('');
   const [subscriptions, setSubscriptions] = useState([]);
+  const [subscriptionsPagination, setSubscriptionsPagination] = useState({});
   const [purchases, setPurchases] = useState([]);
   const [purchasesRecipes, setPurchasesRecipes] = useState([]);
 
@@ -172,10 +175,15 @@ function App() {
       });
   }
 
-  function getSubscriptions() {
-    api.getSubscriptions()
+  function getSubscriptions(page) {
+    api.getSubscriptions({ page })
       .then((subscriptionsData) => {
-        setSubscriptions(subscriptionsData);
+        setSubscriptions(subscriptionsData.results);
+        setSubscriptionsPagination({
+          count: subscriptionsData.count,
+          next: subscriptionsData.next,
+          previous: subscriptionsData.previous,
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -208,12 +216,17 @@ function App() {
     api.getFavoritesRecipes()
       .then((favorites) => {
         const favoriteRiceps = [];
-        favorites.forEach((item) => (
+        favorites.results.forEach((item) => (
           favoriteRiceps.push(item.favorite)
         ));
         setCurrentFavoriteRecipes(favoriteRiceps);
         // данные включают не только рецепты но и айдишники записей
-        setCurrentFavoritesData(favorites);
+        setCurrentFavoritesData(favorites.results);
+        setFavoritesPagination({
+          count: favorites.count,
+          next: favorites.next,
+          previous: favorites.previous,
+        });
       });
   }
 
@@ -285,14 +298,23 @@ function App() {
       });
   }
 
-  useEffect(() => {
-    api.getRecipes()
+  function getRecipes(page) {
+    api.getRecipes({ page })
       .then((data) => {
-        setRecipes(data);
+        setRecipes(data.results);
+        setRecipesPagination({
+          count: data.count,
+          next: data.next,
+          previous: data.previous,
+        });
       })
       .catch((err) => {
         console.log(err);
       });
+  }
+
+  useEffect(() => {
+    getRecipes();
   }, [isLoggedIn]);
 
   useEffect(() => {
@@ -341,6 +363,8 @@ function App() {
                     onAddToFavorites={handleAddToFavorites}
                     onDeleteFromFavorites={handleRemoveFromFavorites}
                     onAddPurchase={handleAddToPurchase}
+                    recipesPagination={recipesPagination}
+                    getRecipes={getRecipes}
                   />
                 </Route>
 
@@ -378,6 +402,7 @@ function App() {
                   <MyFollow
                     subscriptions={subscriptions}
                     getSubscriptions={getSubscriptions}
+                    subscriptionsPagination={subscriptionsPagination}
                   />
                 </Route>
 
@@ -395,6 +420,7 @@ function App() {
                     onAddToFavorites={handleAddToFavorites}
                     onDeleteFromFavorites={handleRemoveFromFavorites}
                     onAddPurchase={handleAddToPurchase}
+                    favoritesPagination={favoritesPagination}
                   />
                 </Route>
 

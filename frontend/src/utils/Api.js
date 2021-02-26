@@ -6,14 +6,18 @@ class Api {
     this.headers = options.headers;
   }
 
-  async getRecipes(author) {
-    let urlParams;
-    if (author) {
-      urlParams = `/recipes?author=${author}`;
-    } else {
-      urlParams = '/recipes';
-    }
-    const loadingRecipes = fetch((`${this.baseUrl}${urlParams}`), {
+  async getRecipes(params) {
+    // let urlParams;
+    // if (author) {
+    //   urlParams = `/recipes?author=${author}`;
+    // } else {
+    //   urlParams = '/recipes';
+    // }
+    // const loadingRecipes = fetch((`${this.baseUrl}${urlParams}`), {
+    //   headers: this.headers,
+    // });
+    const { page = 'page=1', author = '' } = params;
+    const loadingRecipes = fetch((`${this.baseUrl}/recipes/?${page}&${author}`), {
       headers: this.headers,
     });
     const response = await loadingRecipes;
@@ -76,8 +80,9 @@ class Api {
     });
   }
 
-  async getSubscriptions() {
-    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/`), {
+  async getSubscriptions(params) {
+    const { page = 'page=1' } = params;
+    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/?${page}`), {
       method: 'GET',
       headers: this.headers,
     });

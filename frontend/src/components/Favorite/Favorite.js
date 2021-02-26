@@ -9,6 +9,7 @@ function Favorite({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
+  favoritesPagination,
 }) {
   const recipes = useContext(CurrentFavoriteRecipes);
 
@@ -29,7 +30,9 @@ function Favorite({
           />
         ))}
       </CardList>
-      <Pagination />
+      <Pagination
+        pagination={favoritesPagination}
+      />
     </>
   );
 }

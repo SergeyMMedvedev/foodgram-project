@@ -5,7 +5,8 @@ import CardUser from '../CardUser/CardUser';
 import Pagination from '../Pagination/Pagination';
 // import api from '../../utils/Api';
 
-function MyFollow({ subscriptions }) {
+function MyFollow({ subscriptions, getSubscriptions, subscriptionsPagination }) {
+  console.log('subscriptions', subscriptions);
   return (
     <>
       <CardList>
@@ -16,7 +17,10 @@ function MyFollow({ subscriptions }) {
           />
         ))}
       </CardList>
-      <Pagination />
+      <Pagination
+        pagination={subscriptionsPagination}
+        getItems={getSubscriptions}
+      />
     </>
   );
 }

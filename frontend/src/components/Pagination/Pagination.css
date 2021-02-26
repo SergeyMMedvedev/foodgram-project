@@ -3,6 +3,15 @@
   justify-content: center;
 }
 
+.pagination__link {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
+  line-height: 24px;
+  color: inherit;
+}
+
 .pagination__container {
   display: inline-flex;
   flex-direction: row;
@@ -38,18 +47,4 @@
   border-radius: 50%;
   width: 46px;
   height: 46px;
-}
-
-.pagination__link {
-  font-family: 'Montserrat', sans-serif;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 20px;
-  line-height: 24px;
-  color: inherit;
-}
-
-.pagination {
-  display: flex;
-  justify-content: center;
 }
