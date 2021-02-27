@@ -1,13 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useContext,
+  // useContext,
+  useEffect,
+  useState,
+} from 'react';
 import { Link } from 'react-router-dom';
 import './Card.css';
 import testCardImg from '../../images/testCardImg.png';
 import renderTags from '../../utils/renderTags';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
-import { CurrentFavoriteRecipes, CurrentFavoritesData } from '../../context/CurrentFavoriteRecipesContext';
+import CurrentUserContext from '../../context/CurrentUserContext';
 
 function Card({
   allRecipes,
+  subscribers,
   recipeId,
   recipeName,
   tags,
@@ -17,10 +23,8 @@ function Card({
   onDeleteFromFavorites,
   onAddPurchase,
 }) {
-  const favoriteRecipes = useContext(CurrentFavoriteRecipes);
-  const favoriteData = useContext(CurrentFavoritesData);
-
   const [isCardFavorite, setIsCardFavorite] = useState(false);
+  const currentUser = useContext(CurrentUserContext);
 
   function handleAddToPurchase() {
     onAddPurchase(recipeId);
@@ -31,27 +35,26 @@ function Card({
   }
 
   function handleRemoveFromFavorites() {
-    const favoriteDataItem = favoriteData.find((item) => (
-      item.favorite.id === recipeId
-    ));
-    onDeleteFromFavorites(favoriteDataItem.id);
+    onDeleteFromFavorites(recipeId);
   }
 
   useEffect(() => {
+    console.log('THIS IS', recipeId);
+    console.log('subscribers', subscribers);
+    console.log('currentUser.username', currentUser.username);
+    const isSaved2 = subscribers.some((item) => (
+      item.username === currentUser.username
+    ));
+    console.log('isSaved2', isSaved2);
     if (allRecipes) {
-      const favoriteIds = [];
-      favoriteRecipes.forEach((item) => (
-        favoriteIds.push(item.id)
+      const isSaved = subscribers.some((item) => (
+        item.username === currentUser.username
       ));
-      if (favoriteIds.includes(recipeId)) {
-        setIsCardFavorite(true);
-      } else {
-        setIsCardFavorite(false);
-      }
+      setIsCardFavorite(isSaved);
     } else {
       setIsCardFavorite(true);
     }
-  }, [favoriteRecipes]);
+  }, [subscribers]);
 
   return (
     <div className="card" data-id={`recipe__${recipeId}`}>

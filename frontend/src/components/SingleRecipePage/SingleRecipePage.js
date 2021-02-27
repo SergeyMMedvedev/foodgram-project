@@ -5,7 +5,6 @@ import testCardImg from '../../images/testCardImg.png';
 import api from '../../utils/Api';
 import renderTags from '../../utils/renderTags';
 import CurrentUserContext from '../../context/CurrentUserContext';
-import { CurrentFavoriteRecipes, CurrentFavoritesData } from '../../context/CurrentFavoriteRecipesContext';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
 
 function SingleRecipePage({
@@ -15,14 +14,23 @@ function SingleRecipePage({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
+  // favoriteRecipes
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
   const [isUserisSubscribed, setIsUserisSubscribed] = useState(false);
   const currentUser = useContext(CurrentUserContext);
   const [isCardFavorite, setIsCardFavorite] = useState(false);
-  const favoriteRecipes = useContext(CurrentFavoriteRecipes);
-  const favoriteData = useContext(CurrentFavoritesData);
+
+  function getRecipeData(id) {
+    api.getRecipe(id)
+      .then((data) => {
+        setRecipe(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   function handleAddToPurchase() {
     onAddPurchase(recipeId);
@@ -30,13 +38,12 @@ function SingleRecipePage({
 
   function handleAddToFavorites() {
     onAddToFavorites(recipeId);
+    getRecipeData(recipeId);
   }
 
   function handleRemoveFromFavorites() {
-    const favoriteDataItem = favoriteData.find((item) => (
-      item.favorite.id === +recipeId
-    ));
-    onDeleteFromFavorites(favoriteDataItem.id);
+    onDeleteFromFavorites(recipeId);
+    getRecipeData(recipeId);
   }
 
   function handleSubscribe() {
@@ -51,35 +58,17 @@ function SingleRecipePage({
   }
 
   useEffect(() => {
-    api.getRecipe(recipeId)
-      .then((data) => {
-        setRecipe(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    getRecipeData(recipeId);
   }, [recipeId]);
 
   useEffect(() => {
-    const favoriteIds = [];
-    favoriteRecipes.forEach((item) => (
-      favoriteIds.push(item.id)
-    ));
-    if (favoriteIds.includes(+recipeId)) {
-      setIsCardFavorite(true);
-    } else {
-      setIsCardFavorite(false);
-    }
-  }, [favoriteRecipes]);
-
-  useEffect(() => {
-    if (recipe.author) {
-      const userFavoriteAuthorsNames = subscriptions.map((author) => (
-        author.author
+    if (recipe.subscribers) {
+      const isSaved = recipe.subscribers.some((item) => (
+        item.username === currentUser.username
       ));
-      setIsUserisSubscribed(userFavoriteAuthorsNames.includes(recipe.author));
+      setIsCardFavorite(isSaved);
     }
-  }, [recipe, subscriptions]);
+  }, [recipe, currentUser.username]);
 
   function renderIngredients(ingredients) {
     if (ingredients) {

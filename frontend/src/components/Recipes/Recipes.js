@@ -6,6 +6,7 @@ import Pagination from '../Pagination/Pagination';
 
 function Recipes({
   recipes,
+  favoriteRecipes,
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
@@ -19,6 +20,7 @@ function Recipes({
           <Card
             key={`card__${recipe.id}`}
             allRecipes
+            subscribers={recipe.subscribers}
             recipeId={recipe.id}
             recipeName={recipe.name}
             tags={recipe.tag}
@@ -27,6 +29,7 @@ function Recipes({
             onAddToFavorites={onAddToFavorites}
             onDeleteFromFavorites={onDeleteFromFavorites}
             onAddPurchase={onAddPurchase}
+            favoriteRecipes={favoriteRecipes}
           />
         ))}
       </CardList>

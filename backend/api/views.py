@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import os
+from django.db.models import Count, F, Value, CharField
 from wsgiref.util import FileWrapper
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import HttpResponse
@@ -8,14 +9,21 @@ from rest_framework.generics import CreateAPIView, RetrieveAPIView, UpdateAPIVie
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, generics
 from rest_framework.decorators import api_view, permission_classes, action
-from .models import Ingredient, Recipe, Tag, Follow, Favorite, Purchase
+from .models import (
+    Ingredient,
+    Recipe,
+    Tag,
+    Follow,
+    # Favorite,
+    Purchase
+)
 from .serializers import (
     IngredientSerializer,
     RecipeSerializer,
     UserSerializer,
     ChangePasswordSerializer,
     FollowSerializer,
-    FavoriteSerializer,
+    # FavoriteSerializer,
     PurchaseSerializer,
 )
 from rest_framework.parsers import MultiPartParser, FileUploadParser, FormParser
@@ -113,6 +121,7 @@ class UserCreateAPIView(CreateAPIView):
 class IngredientViewSet(ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    pagination_class = None
 
     def get_queryset(self):
         if (self.request.query_params):
@@ -161,12 +170,6 @@ class RecipeAPIView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # return Response('response')
 
-    def get(self, request):
-        print('get')
-        print(request)
-        print(request.data)
-        return Response('dfgdfgsgf')
-
 
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
@@ -175,32 +178,7 @@ class RecipeViewSet(ModelViewSet):
 
     # permission_classes = [IsAuthenticated, ]
 
-    def perform_create(self, serializer):
-        request_ingredients = self.request.data.get('ingredient')
-        request_tags = self.request.data.get('tag')
-        # print(request_ingredients)
-        # names = []
-        # amount = []
-        # units = []
-        ingredients = []
-        for request_ingredient in request_ingredients:
-            ingredients.append(Ingredient.objects.get_or_create(
-                name=request_ingredient.get('name'),
-                amount=request_ingredient.get('amount'),
-                units=request_ingredient.get('units'))[0])
-        # print(ingredients)
-        # ingredients = Ingredient.objects.filter(
-        #         name__in=names,
-        #         units__in=units)
-        print('self.request.user', self.request.user)
-        tags = Tag.objects.filter(name__in=request_tags)
-        serializer.save(
-            ingredient=ingredients,
-            tag=tags,
-            author=self.request.user)
-
     def get_queryset(self):
-        print('self.request.query_params.get(author)', self.request.query_params.get('author'))
         if self.request.query_params.get('author'):
 
             author_name = self.request.query_params.get('author')
@@ -238,27 +216,57 @@ class FollowDestroyAPIView(DestroyAPIView):
     queryset = Follow.objects.all()
 
 
-class FavoriteAPIView(mixins.CreateModelMixin,
+# class FavoriteAPIView(mixins.CreateModelMixin,
+#                       mixins.ListModelMixin,
+#                       mixins.DestroyModelMixin,
+#                       viewsets.GenericViewSet):
+#     queryset = Favorite.objects.all()
+#     serializer_class = FavoriteSerializer
+#     permission_classes = [IsAuthenticated, ]
+#     # pagination_class = None
+#
+#     def get_queryset(self):
+#         queryset = Favorite.objects.filter(user=self.request.user)
+#         return queryset
+#
+#     def perform_create(self, serializer):
+#         print('perform_create')
+#         print('perform_create self.request.data', self.request.data)
+#         recipe = get_object_or_404(Recipe,
+#                                    pk=self.request.data.get('favorite'))
+#
+#         serializer.save(user=self.request.user,
+#                         favorite=recipe)
+
+class FavoriteAPIView(
+                      mixins.CreateModelMixin,
                       mixins.ListModelMixin,
                       mixins.DestroyModelMixin,
                       viewsets.GenericViewSet):
-    queryset = Favorite.objects.all()
-    serializer_class = FavoriteSerializer
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticated, ]
     # pagination_class = None
 
     def get_queryset(self):
-        queryset = Favorite.objects.filter(user=self.request.user)
+
+        queryset = Recipe.objects.filter(subscribers=self.request.user)
         return queryset
 
-    def perform_create(self, serializer):
-        print('perform_create')
-        print('perform_create self.request.data', self.request.data)
+    def create(self, request, *args, **kwargs):
+
         recipe = get_object_or_404(Recipe,
                                    pk=self.request.data.get('favorite'))
+        recipe.subscribers.add(self.request.user)
+        serializer = self.get_serializer(recipe)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        serializer.save(user=self.request.user,
-                        favorite=recipe)
+    def destroy(self, request, *args, **kwargs):
+        recipe = get_object_or_404(Recipe,
+                                   pk=self.kwargs['pk'])
+        recipe.subscribers.remove(self.request.user)
+        serializer = self.get_serializer(recipe)
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
 
 
 class PurchaseAPIView(mixins.CreateModelMixin,

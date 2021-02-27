@@ -27,7 +27,7 @@ import api from '../../utils/Api';
 import auth from '../../utils/Auth';
 
 import CurrentUserContext from '../../context/CurrentUserContext';
-import { CurrentFavoriteRecipes, CurrentFavoritesData } from '../../context/CurrentFavoriteRecipesContext';
+import downloadAsFile from '../../utils/downloadFile';
 
 function App() {
   const history = useHistory();
@@ -36,8 +36,8 @@ function App() {
   const [recipesPagination, setRecipesPagination] = useState({});
   const [favoritesPagination, setFavoritesPagination] = useState({});
   const [currentUser, setCurrentUser] = useState({});
-  const [currentFavoriteRecipes, setCurrentFavoriteRecipes] = useState([]);
-  const [currentFavoritesData, setCurrentFavoritesData] = useState([]);
+  // const [currentFavoritesData, setCurrentFavoritesData] = useState([]);
+  const [favoriteRecipes, setFavoriteRecipes] = useState([]);
   const [serverError, setServerError] = useState('');
   const [subscriptions, setSubscriptions] = useState([]);
   const [subscriptionsPagination, setSubscriptionsPagination] = useState({});
@@ -219,9 +219,7 @@ function App() {
         favorites.results.forEach((item) => (
           favoriteRiceps.push(item.favorite)
         ));
-        setCurrentFavoriteRecipes(favoriteRiceps);
-        // данные включают не только рецепты но и айдишники записей
-        setCurrentFavoritesData(favorites.results);
+        setFavoriteRecipes(favorites.results);
         setFavoritesPagination({
           count: favorites.count,
           next: favorites.next,
@@ -257,6 +255,21 @@ function App() {
     }
   }, [isLoggedIn]);
 
+  function getRecipes(page) {
+    api.getRecipes({ page })
+      .then((data) => {
+        setRecipes(data.results);
+        setRecipesPagination({
+          count: data.count,
+          next: data.next,
+          previous: data.previous,
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   function handleAddToPurchase(recipeId) {
     api.addPurchase(recipeId)
       .then(() => {
@@ -281,6 +294,7 @@ function App() {
   function handleAddToFavorites(recipeId) {
     api.addToFavoritesRecipes(recipeId)
       .then(() => {
+        getRecipes();
         getFavoritesRecipes();
       })
       .catch((err) => {
@@ -288,25 +302,11 @@ function App() {
       });
   }
 
-  function handleRemoveFromFavorites(favoriteId) {
-    api.deleteFromFavoritesRecipes(favoriteId)
+  function handleRemoveFromFavorites(recipeId) {
+    api.deleteFromFavoritesRecipes(recipeId)
       .then(() => {
+        getRecipes();
         getFavoritesRecipes();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  function getRecipes(page) {
-    api.getRecipes({ page })
-      .then((data) => {
-        setRecipes(data.results);
-        setRecipesPagination({
-          count: data.count,
-          next: data.next,
-          previous: data.previous,
-        });
       })
       .catch((err) => {
         console.log(err);
@@ -327,15 +327,7 @@ function App() {
     api.download(downloadPurchases)
       .then((response) => {
         console.log(response);
-        // window.navigator.msSaveBlob(response, 'filename');
 
-        function downloadAsFile(data) {
-          const a = document.createElement('a');
-          const file = new Blob([data], { type: 'application/text' });
-          a.href = URL.createObjectURL(file);
-          a.download = 'example.txt';
-          a.click();
-        }
         downloadAsFile(response);
       })
       .catch((err) => {
@@ -345,116 +337,116 @@ function App() {
 
   return (
     <>
-      <CurrentFavoritesData.Provider value={currentFavoritesData}>
-        <CurrentFavoriteRecipes.Provider value={currentFavoriteRecipes}>
-          <CurrentUserContext.Provider value={currentUser}>
-            <Header
-              isLoggedIn={isLoggedIn}
-              onExit={handleExit}
-              purchasesRecipes={purchasesRecipes}
-            />
-            <main className="main container">
 
-              <Switch>
-                <Route exact path="/">
-                  {renderMainHeader('Рецепты')}
-                  <Recipes
-                    recipes={recipes}
-                    onAddToFavorites={handleAddToFavorites}
-                    onDeleteFromFavorites={handleRemoveFromFavorites}
-                    onAddPurchase={handleAddToPurchase}
-                    recipesPagination={recipesPagination}
-                    getRecipes={getRecipes}
-                  />
-                </Route>
+      <CurrentUserContext.Provider value={currentUser}>
+        <Header
+          isLoggedIn={isLoggedIn}
+          onExit={handleExit}
+          purchasesRecipes={purchasesRecipes}
+        />
+        <main className="main container">
 
-                <Route path="/signup">
-                  {renderMainHeader('Регистрация')}
-                  <FormReg
-                    onSubmit={handleRegistrationSubmit}
-                    serverError={serverError}
-                  />
-                </Route>
+          <Switch>
+            <Route exact path="/">
+              {renderMainHeader('Рецепты')}
+              <Recipes
+                recipes={recipes}
+                favoriteRecipes={favoriteRecipes}
+                onAddToFavorites={handleAddToFavorites}
+                onDeleteFromFavorites={handleRemoveFromFavorites}
+                onAddPurchase={handleAddToPurchase}
+                recipesPagination={recipesPagination}
+                getRecipes={getRecipes}
+              />
+            </Route>
 
-                <Route path="/signin">
-                  {renderMainHeader('Войти на сайт')}
-                  <FormAuth
-                    onSubmit={handleLoginSubmit}
-                    serverError={serverError}
-                  />
-                </Route>
+            <Route path="/signup">
+              {renderMainHeader('Регистрация')}
+              <FormReg
+                onSubmit={handleRegistrationSubmit}
+                serverError={serverError}
+              />
+            </Route>
 
-                <Route path="/reset-password">
-                  {renderMainHeader('Сброс пароля')}
-                  <FormResetPassword />
-                </Route>
+            <Route path="/signin">
+              {renderMainHeader('Войти на сайт')}
+              <FormAuth
+                onSubmit={handleLoginSubmit}
+                serverError={serverError}
+              />
+            </Route>
 
-                <Route path="/change-password">
-                  {renderMainHeader('Изменить пароль')}
-                  <FormChangePassword
-                    onSubmit={handlePasswordChange}
-                    serverError={serverError}
-                  />
-                </Route>
+            <Route path="/reset-password">
+              {renderMainHeader('Сброс пароля')}
+              <FormResetPassword />
+            </Route>
 
-                <Route path="/my-follow">
-                  {renderMainHeader('Мои подписки')}
-                  <MyFollow
-                    subscriptions={subscriptions}
-                    getSubscriptions={getSubscriptions}
-                    subscriptionsPagination={subscriptionsPagination}
-                  />
-                </Route>
+            <Route path="/change-password">
+              {renderMainHeader('Изменить пароль')}
+              <FormChangePassword
+                onSubmit={handlePasswordChange}
+                serverError={serverError}
+              />
+            </Route>
 
-                <Route path="/form-recipe">
-                  {renderMainHeader('Создание рецепта')}
-                  <FormRecipe
-                    onSubmit={handleRecipeSubmit}
-                    serverError={serverError}
-                  />
-                </Route>
+            <Route path="/my-follow">
+              {renderMainHeader('Мои подписки')}
+              <MyFollow
+                subscriptions={subscriptions}
+                getSubscriptions={getSubscriptions}
+                subscriptionsPagination={subscriptionsPagination}
+              />
+            </Route>
 
-                <Route path="/favorite">
-                  {renderMainHeader('Избранное')}
-                  <Favorite
-                    onAddToFavorites={handleAddToFavorites}
-                    onDeleteFromFavorites={handleRemoveFromFavorites}
-                    onAddPurchase={handleAddToPurchase}
-                    favoritesPagination={favoritesPagination}
-                  />
-                </Route>
+            <Route path="/form-recipe">
+              {renderMainHeader('Создание рецепта')}
+              <FormRecipe
+                onSubmit={handleRecipeSubmit}
+                serverError={serverError}
+              />
+            </Route>
 
-                <Route path="/shop-list">
-                  {renderMainHeader('Список покупок')}
-                  <ShopList
-                    purchasesRecipes={purchasesRecipes}
-                    purchases={purchases}
-                    onDeletePurchase={handleDeletePurchase}
-                    onDownload={handleDownloadClick}
-                  />
-                </Route>
+            <Route path="/favorite">
+              {renderMainHeader('Избранное')}
+              <Favorite
+                onAddToFavorites={handleAddToFavorites}
+                onDeleteFromFavorites={handleRemoveFromFavorites}
+                onAddPurchase={handleAddToPurchase}
+                favoritesPagination={favoritesPagination}
+                recipes={favoriteRecipes}
+              />
+            </Route>
 
-                <Route path="/single-page/:recipeId">
-                  <SingleRecipePage
-                    onSubscribe={handleSubscribe}
-                    onUnsubscribe={handleUnsubscribe}
-                    subscriptions={subscriptions}
-                    onAddToFavorites={handleAddToFavorites}
-                    onDeleteFromFavorites={handleRemoveFromFavorites}
-                    onAddPurchase={handleAddToPurchase}
-                  />
-                </Route>
+            <Route path="/shop-list">
+              {renderMainHeader('Список покупок')}
+              <ShopList
+                purchasesRecipes={purchasesRecipes}
+                purchases={purchases}
+                onDeletePurchase={handleDeletePurchase}
+                onDownload={handleDownloadClick}
+              />
+            </Route>
 
-                <Route>
-                  <Redirect to="/" />
-                </Route>
+            <Route path="/single-page/:recipeId">
+              <SingleRecipePage
+                onSubscribe={handleSubscribe}
+                onUnsubscribe={handleUnsubscribe}
+                subscriptions={subscriptions}
+                onAddToFavorites={handleAddToFavorites}
+                onDeleteFromFavorites={handleRemoveFromFavorites}
+                onAddPurchase={handleAddToPurchase}
+                favoriteRecipes={favoriteRecipes}
+              />
+            </Route>
 
-              </Switch>
-            </main>
-            <Footer />
-          </CurrentUserContext.Provider>
-        </CurrentFavoriteRecipes.Provider>
-      </CurrentFavoritesData.Provider>
+            <Route>
+              <Redirect to="/" />
+            </Route>
+
+          </Switch>
+        </main>
+        <Footer />
+      </CurrentUserContext.Provider>
     </>
   );
 }
