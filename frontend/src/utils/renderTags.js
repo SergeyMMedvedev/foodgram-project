@@ -1,17 +1,24 @@
 import React from 'react';
+import Badge from '../components/Badge/Badge';
 
 export default function renderTags(tags) {
+  let className;
   if (tags) {
     return tags.map((tag) => {
-      let className;
-      if (tag.name === 'Завтрак') {
+      if (tag.name === 'завтрак') {
         className = 'badge_style_orange';
-      } else if (tag.name === 'Обед') {
+      } else if (tag.name === 'обед') {
         className = 'badge_style_green';
       } else {
         className = 'badge_style_purple';
       }
-      return <li key={tag.name} className="card__item"><span className={`badge ${className}`}>{tag.name}</span></li>;
+      return (
+        <Badge
+          key={tag.name}
+          className={className}
+          tagName={tag.name}
+        />
+      );
     });
   }
   return '';

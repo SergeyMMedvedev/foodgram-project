@@ -10,6 +10,12 @@
   font-size: 20px;
   line-height: 24px;
   color: inherit;
+  text-decoration: none;
+  border: 1px solid transparent;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  background-color: transparent;
 }
 
 .pagination__container {
@@ -39,7 +45,7 @@
 .pagination__item_active:after {
   position: absolute;
   content: '';
-  top: -50%;
+  top: -35%;
   left: 50%;
   transform: translate(-50%);
   z-index: -1;

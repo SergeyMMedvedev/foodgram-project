@@ -16,8 +16,15 @@ class Api {
     // const loadingRecipes = fetch((`${this.baseUrl}${urlParams}`), {
     //   headers: this.headers,
     // });
-    const { page = 'page=1', author = '' } = params;
-    const loadingRecipes = fetch((`${this.baseUrl}/recipes/?${page}&${author}`), {
+    const {
+      page = 'page=1',
+      author = '',
+      tagBreakfast = '',
+      tagDinner = '',
+      tagSupper = '',
+    } = params;
+    console.log('запрос: ', (`${this.baseUrl}/recipes/?${page}${author}${tagBreakfast}${tagDinner}${tagSupper}`));
+    const loadingRecipes = fetch((`${this.baseUrl}/recipes/?${page}${author}${tagBreakfast}${tagDinner}${tagSupper}`), {
       headers: this.headers,
     });
     const response = await loadingRecipes;
@@ -26,6 +33,7 @@ class Api {
       return Promise.reject(`Ошибка: ${recipes.message}`);
     }
     return new Promise((resolve) => {
+      console.log('выдача:', recipes.results);
       resolve(recipes);
     });
   }
@@ -59,7 +67,7 @@ class Api {
   }
 
   async postRecipe(recipe, formElem, token) {
-    const loadingResponse = fetch((`${this.baseUrl}/recipes2/`), {
+    const loadingResponse = fetch((`${this.baseUrl}/recipes/`), {
       method: 'POST',
       headers: {
         Authorization: `Token ${token}`,
@@ -80,9 +88,41 @@ class Api {
     });
   }
 
+  async updateRecipe(recipe, formElem, token, recipeId) {
+    console.log('formElem', formElem);
+    console.log('image', formElem.get('image'));
+    console.log('image', formElem.has('image'));
+    if (!formElem.get('image')) {
+      formElem.delete('image');
+    }
+    console.log('formElem', formElem);
+    console.log('image', formElem.delete('image'));
+    console.log('image', formElem.has('image'));
+    const loadingResponse = fetch((`${this.baseUrl}/recipes/${recipeId}/`), {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Token ${token}`,
+      },
+      body: formElem,
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
+
   async getSubscriptions(params) {
-    const { page = 'page=1' } = params;
-    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/?${page}`), {
+    const { page = 'page=1', author = '' } = params;
+    console.log((`${this.baseUrl}/subscriptions/?${page}${author}`));
+    const loadingResponse = fetch((`${this.baseUrl}/subscriptions/?${page}${author}`), {
       method: 'GET',
       headers: this.headers,
     });
@@ -136,8 +176,15 @@ class Api {
     });
   }
 
-  async getFavoritesRecipes() {
-    const loadingResponse = fetch((`${this.baseUrl}/favorites/`), {
+  async getFavoritesRecipes(params) {
+    const {
+      page = 'page=1',
+      tagBreakfast = '',
+      tagDinner = '',
+      tagSupper = '',
+    } = params;
+    console.log((`${this.baseUrl}/favorites/?${page}${tagBreakfast}${tagDinner}${tagSupper}`));
+    const loadingResponse = fetch((`${this.baseUrl}/favorites/?${page}${tagBreakfast}${tagDinner}${tagSupper}`), {
       method: 'GET',
       headers: this.headers,
     });

@@ -20,6 +20,11 @@
   font-size: 14px;
   line-height: 17px;
   color: #858383;
+  background: transparent;
+  border: none;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
 }
 
 .shopping-list__item {

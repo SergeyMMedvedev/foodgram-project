@@ -26,6 +26,10 @@
   justify-content: center;
 }
 
+.main__header-container {
+  margin-bottom: 60px;
+}
+
 .main__header {
   display: flex;
   justify-content: space-between;
@@ -41,6 +45,25 @@
   color: #000000;
   padding: 0;
   margin: 0;
+}
+
+.main__title-author-name {
+  position: relative;
+}
+
+.main__author-remove-btn {
+  position: absolute;
+  top: 0;
+  right: -15px;
+  background: none;
+  text-decoration: none;
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  width: 15px;
+  height: 15px;
+  border: none;
+  background-image: url("../../images/icons8-delete-16.png");
 }
 
 .link {

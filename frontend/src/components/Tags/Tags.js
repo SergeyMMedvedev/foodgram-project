@@ -1,9 +1,30 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './Tags.css';
 
-function Tags({ onTagClick }) {
+function Tags({
+  main,
+  selectedTags,
+  onTagClick,
+  onSetTagBreakfast,
+  onSetTagTagDinner,
+  onSetTagTagSupper,
+}) {
+  const tagListRef = useRef();
   function handleClick(e) {
-    if (e.target.classList.contains('tags__checkbox_active')) {
+    if (main) {
+      if (e.target.value === 'завтрак') {
+        e.target.classList.toggle('tags__checkbox_active');
+        onSetTagBreakfast();
+      }
+      if (e.target.value === 'обед') {
+        e.target.classList.toggle('tags__checkbox_active');
+        onSetTagTagDinner();
+      }
+      if (e.target.value === 'ужин') {
+        e.target.classList.toggle('tags__checkbox_active');
+        onSetTagTagSupper();
+      }
+    } else if (e.target.classList.contains('tags__checkbox_active')) {
       const remove = true;
       onTagClick(remove, e.target.value);
       e.target.classList.remove('tags__checkbox_active');
@@ -14,8 +35,18 @@ function Tags({ onTagClick }) {
     }
   }
 
+  useEffect(() => {
+    if (selectedTags) {
+      if (selectedTags.length > 0 && tagListRef.current) {
+        Array.prototype.slice.call(tagListRef.current.children).forEach((li) => {
+          if (selectedTags.includes(li.firstChild.value)) li.firstChild.classList.add('tags__checkbox_active');
+        });
+      }
+    }
+  }, [selectedTags]);
+
   return (
-    <ul className="tags">
+    <ul ref={tagListRef} className="tags">
       <li className="tags__item">
         <button value="завтрак" onClick={handleClick} type="button" id="breakfast" className="tags__checkbox tags__checkbox_style_orange" />
         <span className="tags__label">Завтрак</span>

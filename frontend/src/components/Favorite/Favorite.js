@@ -10,13 +10,18 @@ function Favorite({
   onAddPurchase,
   favoritesPagination,
   recipes,
+  getFavoritesRecipes,
+  header,
+  renderMainHeader,
 }) {
   return (
     <>
+      {renderMainHeader(header)}
       <CardList>
         {recipes.map((recipe) => (
           <Card
             key={`card__${recipe.id}`}
+            favoriteRecipesPage
             subscribers={recipe.subscribers}
             recipeId={recipe.id}
             recipeName={recipe.name}
@@ -26,11 +31,13 @@ function Favorite({
             onAddToFavorites={onAddToFavorites}
             onDeleteFromFavorites={onDeleteFromFavorites}
             onAddPurchase={onAddPurchase}
+            pagination={favoritesPagination}
           />
         ))}
       </CardList>
       <Pagination
         pagination={favoritesPagination}
+        getItems={getFavoritesRecipes}
       />
     </>
   );

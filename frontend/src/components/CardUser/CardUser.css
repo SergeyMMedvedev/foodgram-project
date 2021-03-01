@@ -6,6 +6,7 @@
   border-radius: 8px;
   max-width: 363px;
   width: 100%;
+  min-height: 500px;
 }
 
 .card-user__body {
@@ -48,6 +49,17 @@
   font-style: normal;
   font-weight: bold;
   font-size: 20px;
+  line-height: 24px;
+  color: #000000;
+  margin: 0;
+  text-decoration: none;
+}
+
+.card-user__text {
+  font-family: 'Montserrat', sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 16px;
   line-height: 24px;
   color: #000000;
   margin: 0;

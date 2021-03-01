@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import './SingleRecipePage.css';
 import testCardImg from '../../images/testCardImg.png';
 import api from '../../utils/Api';
@@ -18,7 +18,7 @@ function SingleRecipePage({
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
-  const [isUserisSubscribed, setIsUserisSubscribed] = useState(false);
+  const [isUserIsSubscribed, setIsUserIsSubscribed] = useState(null);
   const currentUser = useContext(CurrentUserContext);
   const [isCardFavorite, setIsCardFavorite] = useState(false);
 
@@ -47,14 +47,22 @@ function SingleRecipePage({
   }
 
   function handleSubscribe() {
-    onSubscribe(recipe.author, setIsUserisSubscribed);
+    onSubscribe(recipe.author, setIsUserIsSubscribed);
   }
 
   function handleUnSubscribe() {
-    const currentSubscription = subscriptions.find((subscription) => (
-      subscription.author === recipe.author
-    ));
-    onUnsubscribe(currentSubscription.id, setIsUserisSubscribed);
+    api.getSubscriptions({ author: `&author=${recipe.author}` })
+      .then((data) => {
+        if (data.results) {
+          onUnsubscribe({
+            subscriptionId: data.results[0].id,
+            setIsUserIsSubscribed,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
@@ -62,13 +70,28 @@ function SingleRecipePage({
   }, [recipeId]);
 
   useEffect(() => {
-    if (recipe.subscribers) {
-      const isSaved = recipe.subscribers.some((item) => (
-        item.username === currentUser.username
-      ));
-      setIsCardFavorite(isSaved);
+    if (currentUser.name) {
+      if (recipe.subscribers) {
+        const isSaved = recipe.subscribers.some((item) => (
+          item.username === currentUser.username
+        ));
+        setIsCardFavorite(isSaved);
+      }
     }
   }, [recipe, currentUser.username]);
+
+  useEffect(() => {
+    console.log(currentUser.name);
+    if (currentUser.name) {
+      api.getSubscriptions({ author: `&author=${recipe.author}` })
+        .then((data) => {
+          if (data.results) setIsUserIsSubscribed(data.results.length > 0);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  }, [currentUser, subscriptions, recipe.author]);
 
   function renderIngredients(ingredients) {
     if (ingredients) {
@@ -82,8 +105,23 @@ function SingleRecipePage({
   }
 
   function renderSubscribeButton() {
-    if (currentUser.name !== recipe.author) {
-      if (isUserisSubscribed) {
+    if (currentUser.name && currentUser.name !== recipe.author) {
+      if (isUserIsSubscribed === null) {
+        return (
+          <li className="single-card__item">
+            <button
+              type="button"
+              className="button button_style_light-blue button_size_subscribe"
+              name="subscribe"
+              data-out
+              disabled
+            >
+              Загрузка...
+            </button>
+          </li>
+        );
+      }
+      if (isUserIsSubscribed) {
         return (
           <li className="single-card__item">
             <button
@@ -147,7 +185,11 @@ function SingleRecipePage({
               </p>
             </li>
             <li className="single-card__item">
-              <a style={{ marginLeft: '2.5em' }} href="#" className="single-card__text">Редактировать рецепт</a>
+              {recipe.author === currentUser.name && (
+                <Link type="button" to={`/form-recipe/${recipeId}`} className="single-card__button">
+                  Редактировать рецепт
+                </Link>
+              )}
             </li>
           </ul>
         </div>

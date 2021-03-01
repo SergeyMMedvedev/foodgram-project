@@ -14,7 +14,7 @@ function Recipe({ recipe }) {
       </Link>
       <p className="recipe__text">
         <span className="icon-time" />
-        {recipe.cooking_time}
+        {` ${recipe.cooking_time}`}
       </p>
     </div>
   );

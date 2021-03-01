@@ -73,4 +73,13 @@
 .card__name-link {
   text-decoration: none;
   color: black;
+  border: none;
+  background: none;  
+  outline: none;
+  user-select: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 1em;
+
 }
+

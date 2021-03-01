@@ -7,6 +7,10 @@
   column-gap: 50px;
 }
 
+.recipe__button-container {
+  margin-bottom: 60px;
+}
+
 .recipe__image {
   width: 72px;
   height: 72px;

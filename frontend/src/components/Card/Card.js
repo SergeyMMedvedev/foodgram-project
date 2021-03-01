@@ -10,9 +10,10 @@ import testCardImg from '../../images/testCardImg.png';
 import renderTags from '../../utils/renderTags';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
 import CurrentUserContext from '../../context/CurrentUserContext';
+import { getCurrentPageNumber, getCurrentPageNumberWithRemovingItems } from '../../utils/pagination';
 
 function Card({
-  allRecipes,
+  allRecipesPage,
   subscribers,
   recipeId,
   recipeName,
@@ -22,6 +23,9 @@ function Card({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
+  pagination,
+  selectedAuthor,
+  // onAuthorClick,
 }) {
   const [isCardFavorite, setIsCardFavorite] = useState(false);
   const currentUser = useContext(CurrentUserContext);
@@ -31,22 +35,20 @@ function Card({
   }
 
   function handleAddToFavorites() {
-    onAddToFavorites(recipeId);
+    onAddToFavorites(recipeId, getCurrentPageNumber(pagination), selectedAuthor);
   }
 
   function handleRemoveFromFavorites() {
-    onDeleteFromFavorites(recipeId);
+    onDeleteFromFavorites(recipeId, allRecipesPage ? getCurrentPageNumber(pagination) : getCurrentPageNumberWithRemovingItems(pagination), selectedAuthor);
   }
 
+  // function handleAuthorClick(e) {
+  //   onAuthorClick(`&author__username=${e.target.value}`);
+  // }
+
   useEffect(() => {
-    console.log('THIS IS', recipeId);
-    console.log('subscribers', subscribers);
-    console.log('currentUser.username', currentUser.username);
-    const isSaved2 = subscribers.some((item) => (
-      item.username === currentUser.username
-    ));
-    console.log('isSaved2', isSaved2);
-    if (allRecipes) {
+    // console.log('isSaved2', isSaved2);
+    if (allRecipesPage) {
       const isSaved = subscribers.some((item) => (
         item.username === currentUser.username
       ));
@@ -73,7 +75,8 @@ function Card({
           </p>
           <p className="card__text">
             <span className="icon-user" />
-            <Link to="/" className="card__name-link">{` ${author}`}</Link>
+            {/* <button value={author} onClick={handleAuthorClick} type="button" className="card__name-link">{` ${author}`}</button> */}
+            <Link to={`/recipes/${author}`} className="card__name-link">{` ${author}`}</Link>
           </p>
         </div>
       </div>
@@ -92,4 +95,4 @@ function Card({
   );
 }
 
-export default Card;
+export default React.memo(Card);

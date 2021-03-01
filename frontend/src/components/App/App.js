@@ -22,6 +22,7 @@ import FormRecipe from '../FormRecipe/FormRecipe';
 import Favorite from '../Favorite/Favorite';
 import ShopList from '../ShopList/ShopList';
 import SingleRecipePage from '../SingleRecipePage/SingleRecipePage';
+import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 
 import api from '../../utils/Api';
 import auth from '../../utils/Auth';
@@ -33,6 +34,10 @@ function App() {
   const history = useHistory();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recipes, setRecipes] = useState([]);
+  const [authorRecipes, setAuthorRecipes] = useState([]);
+
+  const [selectedAuthor, setSelectedAuthor] = useState('');
+  // const [authorSlug, setAuthorSlug] = useState('');
   const [recipesPagination, setRecipesPagination] = useState({});
   const [favoritesPagination, setFavoritesPagination] = useState({});
   const [currentUser, setCurrentUser] = useState({});
@@ -44,14 +49,9 @@ function App() {
   const [purchases, setPurchases] = useState([]);
   const [purchasesRecipes, setPurchasesRecipes] = useState([]);
 
-  function renderMainHeader(header) {
-    return (
-      <div className="main__header">
-        <h1 className="main__title">{header}</h1>
-        {(['Рецепты', 'Избранное'].includes(header)) && <Tags />}
-      </div>
-    );
-  }
+  const [tagBreakfast, setTagBreakfast] = useState('');
+  const [tagDinner, setTagDinner] = useState('');
+  const [tagSupper, setTagSupper] = useState('');
 
   function handleRegistrationSubmit(name, username, email, password) {
     auth.register(name, username, email, password)
@@ -104,14 +104,14 @@ function App() {
       auth.getContent(token)
         .then((user) => {
           if (user) {
+            api.headers.Authorization = `Token ${token}`;
+            auth.headers.Authorization = `Token ${token}`;
             setCurrentUser({
               name: user.first_name,
               username: user.username,
               email: user.email,
             });
             setServerError('');
-            api.headers.Authorization = `Token ${token}`;
-            auth.headers.Authorization = `Token ${token}`;
             setIsLoggedIn(true);
           }
         })
@@ -175,6 +175,21 @@ function App() {
       });
   }
 
+  function handleRecipeUpdate(recipe, formElem, token, recipeId) {
+    formElem.append('ingredient', JSON.stringify(recipe.ingredient));
+    formElem.append('tag', JSON.stringify(recipe.tag));
+    api.updateRecipe(recipe, formElem, token, recipeId)
+      .then((respose) => {
+        console.log('respose', respose);
+        setServerError('');
+        window.location.assign('/');
+      })
+      .catch((err) => {
+        console.log('handleRecipeSubmit', err);
+        setServerError(err);
+      });
+  }
+
   function getSubscriptions(page) {
     api.getSubscriptions({ page })
       .then((subscriptionsData) => {
@@ -201,19 +216,30 @@ function App() {
       });
   }
 
-  function handleUnsubscribe(subscriptionId, setIsUserisSubscribed) {
+  function handleUnsubscribe(params) {
+    const { subscriptionId, setIsUserisSubscribed, page } = params;
     api.unsubscribe(subscriptionId)
       .then(() => {
-        getSubscriptions();
-        setIsUserisSubscribed(false);
+        getSubscriptions(page);
+        if (setIsUserisSubscribed) {
+          setIsUserisSubscribed(false);
+        }
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  function getFavoritesRecipes() {
-    api.getFavoritesRecipes()
+  function getFavoritesRecipes(params) {
+    const {
+      page,
+    } = params;
+    api.getFavoritesRecipes({
+      page,
+      tagBreakfast,
+      tagDinner,
+      tagSupper,
+    })
       .then((favorites) => {
         const favoriteRiceps = [];
         favorites.results.forEach((item) => (
@@ -230,7 +256,7 @@ function App() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      getFavoritesRecipes();
+      getFavoritesRecipes({});
     }
   }, [isLoggedIn]);
 
@@ -255,10 +281,26 @@ function App() {
     }
   }, [isLoggedIn]);
 
-  function getRecipes(page) {
-    api.getRecipes({ page })
+  function getRecipes(params) {
+    console.log('сейчас будут запрашиваться: ', params);
+    const {
+      page,
+      author,
+    } = params;
+    api.getRecipes({
+      page,
+      author,
+      tagBreakfast,
+      tagDinner,
+      tagSupper,
+    })
       .then((data) => {
-        setRecipes(data.results);
+        // console.log(data);
+        if (author) {
+          setAuthorRecipes(data.results);
+        } else {
+          setRecipes(data.results);
+        }
         setRecipesPagination({
           count: data.count,
           next: data.next,
@@ -269,6 +311,31 @@ function App() {
         console.log(err);
       });
   }
+
+  function handleAuthorClick(authorName) {
+    console.log('handleAuthorClick');
+    // setAuthorSlug(authorName);
+    getRecipes({ author: authorName });
+  }
+
+  function handleSetTagBreakfast() {
+    setTagBreakfast(tagBreakfast ? '' : '&tag__name=завтрак');
+  }
+
+  function handleSetTagDinner() {
+    setTagDinner(tagDinner ? '' : '&tag__name=обед');
+  }
+
+  function handleSetTagSupper() {
+    setTagSupper(tagSupper ? '' : '&tag__name=ужин');
+  }
+
+  useEffect(() => {
+    getRecipes({});
+    if (isLoggedIn) {
+      getFavoritesRecipes({});
+    }
+  }, [tagBreakfast, tagDinner, tagSupper]);
 
   function handleAddToPurchase(recipeId) {
     api.addPurchase(recipeId)
@@ -291,22 +358,22 @@ function App() {
       });
   }
 
-  function handleAddToFavorites(recipeId) {
+  function handleAddToFavorites(recipeId, page, author) {
     api.addToFavoritesRecipes(recipeId)
       .then(() => {
-        getRecipes();
-        getFavoritesRecipes();
+        getRecipes({ page, author });
+        getFavoritesRecipes({ page });
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  function handleRemoveFromFavorites(recipeId) {
+  function handleRemoveFromFavorites(recipeId, page, author) {
     api.deleteFromFavoritesRecipes(recipeId)
       .then(() => {
-        getRecipes();
-        getFavoritesRecipes();
+        getRecipes({ page, author });
+        getFavoritesRecipes({ page });
       })
       .catch((err) => {
         console.log(err);
@@ -314,8 +381,15 @@ function App() {
   }
 
   useEffect(() => {
-    getRecipes();
-  }, [isLoggedIn]);
+    console.log('app useEffect getRecipes');
+    if (selectedAuthor) {
+      console.log('app useEffect getRecipes author: selectedAuthor');
+      getRecipes({ author: selectedAuthor });
+    } else {
+      console.log('app useEffect getRecipes author {}');
+      getRecipes({});
+    }
+  }, [isLoggedIn, selectedAuthor]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -335,6 +409,28 @@ function App() {
       });
   }
 
+  function renderTitleName(header, currentAuthor) {
+    return ` ${currentAuthor.replace('&author__username=', '')}`;
+  }
+
+  function renderMainHeader(header, currentAuthor) {
+    return (
+      <div className="main__header">
+        <h1 className="main__title">
+          {currentAuthor ? renderTitleName(header, currentAuthor) : header}
+        </h1>
+        {(['Рецепты', 'Избранное'].includes(header)) && (
+          <Tags
+            main
+            onSetTagBreakfast={handleSetTagBreakfast}
+            onSetTagTagDinner={handleSetTagDinner}
+            onSetTagTagSupper={handleSetTagSupper}
+          />
+        )}
+      </div>
+    );
+  }
+
   return (
     <>
 
@@ -347,6 +443,7 @@ function App() {
         <main className="main container">
 
           <Switch>
+
             <Route exact path="/">
               {renderMainHeader('Рецепты')}
               <Recipes
@@ -357,6 +454,8 @@ function App() {
                 onAddPurchase={handleAddToPurchase}
                 recipesPagination={recipesPagination}
                 getRecipes={getRecipes}
+                onAuthorClick={handleAuthorClick}
+                setSelectedAuthor={setSelectedAuthor}
               />
             </Route>
 
@@ -389,33 +488,47 @@ function App() {
               />
             </Route>
 
-            <Route path="/my-follow">
-              {renderMainHeader('Мои подписки')}
-              <MyFollow
-                subscriptions={subscriptions}
-                getSubscriptions={getSubscriptions}
-                subscriptionsPagination={subscriptionsPagination}
-              />
-            </Route>
+            <ProtectedRoute
+              path="/my-follow"
+              header="Мои подписки"
+              renderMainHeader={renderMainHeader}
+              component={MyFollow}
+              onUnsubscribe={handleUnsubscribe}
+              subscriptions={subscriptions}
+              getSubscriptions={getSubscriptions}
+              subscriptionsPagination={subscriptionsPagination}
+            />
 
-            <Route path="/form-recipe">
-              {renderMainHeader('Создание рецепта')}
-              <FormRecipe
-                onSubmit={handleRecipeSubmit}
-                serverError={serverError}
-              />
-            </Route>
+            <ProtectedRoute
+              path="/form-recipe/:recipeId"
+              header="Редактирование рецепта"
+              renderMainHeader={renderMainHeader}
+              component={FormRecipe}
+              onSubmit={handleRecipeUpdate}
+              serverError={serverError}
+            />
 
-            <Route path="/favorite">
-              {renderMainHeader('Избранное')}
-              <Favorite
-                onAddToFavorites={handleAddToFavorites}
-                onDeleteFromFavorites={handleRemoveFromFavorites}
-                onAddPurchase={handleAddToPurchase}
-                favoritesPagination={favoritesPagination}
-                recipes={favoriteRecipes}
-              />
-            </Route>
+            <ProtectedRoute
+              path="/form-recipe/"
+              header="Создание рецепта"
+              renderMainHeader={renderMainHeader}
+              component={FormRecipe}
+              onSubmit={handleRecipeSubmit}
+              serverError={serverError}
+            />
+
+            <ProtectedRoute
+              path="/favorite/"
+              header="Избранное"
+              renderMainHeader={renderMainHeader}
+              component={Favorite}
+              onAddToFavorites={handleAddToFavorites}
+              onDeleteFromFavorites={handleRemoveFromFavorites}
+              onAddPurchase={handleAddToPurchase}
+              favoritesPagination={favoritesPagination}
+              recipes={favoriteRecipes}
+              getFavoritesRecipes={getFavoritesRecipes}
+            />
 
             <Route path="/shop-list">
               {renderMainHeader('Список покупок')}
@@ -436,6 +549,25 @@ function App() {
                 onDeleteFromFavorites={handleRemoveFromFavorites}
                 onAddPurchase={handleAddToPurchase}
                 favoriteRecipes={favoriteRecipes}
+              />
+            </Route>
+
+            <Route path="/recipes/:author">
+              {renderMainHeader('Рецепты', selectedAuthor)}
+              <Recipes
+                recipes={authorRecipes}
+                favoriteRecipes={favoriteRecipes}
+                onAddToFavorites={handleAddToFavorites}
+                onDeleteFromFavorites={handleRemoveFromFavorites}
+                onAddPurchase={handleAddToPurchase}
+                recipesPagination={recipesPagination}
+                getRecipes={getRecipes}
+                onAuthorClick={handleAuthorClick}
+                selectedAuthor={selectedAuthor}
+                setSelectedAuthor={setSelectedAuthor}
+                onSubscribe={handleSubscribe}
+                onUnsubscribe={handleUnsubscribe}
+                subscriptions={subscriptions}
               />
             </Route>
 

@@ -1,5 +1,6 @@
 from django.shortcuts import render
 import os
+from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count, F, Value, CharField
 from wsgiref.util import FileWrapper
 from django.views.decorators.csrf import csrf_exempt
@@ -174,22 +175,75 @@ class RecipeAPIView(APIView):
 class RecipeViewSet(ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
-    pagination_class = PageNumberPagination
+    # pagination_class = PageNumberPagination
+    # pagination_class = None
+    filter_backends = [DjangoFilterBackend, ]
+    filter_fields = ['author__username', ]
 
     # permission_classes = [IsAuthenticated, ]
 
     def get_queryset(self):
-        if self.request.query_params.get('author'):
-
-            author_name = self.request.query_params.get('author')
-            print('author_name', author_name)
-            author = get_object_or_404(User, username=author_name)
-            print('author', author)
-            queryset = Recipe.objects.filter(author=author)
-            print('queryset', queryset)
+        if self.request.query_params.getlist('tag__name'):
+            tags = self.request.query_params.getlist('tag__name')
+            queryset = Recipe.objects.filter(tag__name__in=tags).distinct()
         else:
             queryset = Recipe.objects.all()
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        print(request.data)
+        request_ingredients = self.request.data.get('ingredient')
+        request_ingredients = json.loads(request_ingredients)
+
+        request_tags = self.request.data.get('tag')
+        request_tags = json.loads(request_tags)
+        print(request_tags)
+
+        ingredients = []
+        for request_ingredient in request_ingredients:
+            ingredients.append(Ingredient.objects.get_or_create(
+                name=request_ingredient.get('name'),
+                amount=request_ingredient.get('amount'),
+                units=request_ingredient.get('units'))[0])
+            # print(request_ingredient)
+        print(self.request.user)
+        author = get_object_or_404(User, username=self.request.user)
+        print(author)
+        tags = Tag.objects.filter(name__in=request_tags)
+        serializer = RecipeSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(ingredient=ingredients,
+                            tag=tags,
+                            author=author)
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        request_ingredients = self.request.data.get('ingredient')
+        request_ingredients = json.loads(request_ingredients)
+
+        request_tags = self.request.data.get('tag')
+        request_tags = json.loads(request_tags)
+
+        ingredients = []
+        for request_ingredient in request_ingredients:
+            ingredients.append(Ingredient.objects.get_or_create(
+                name=request_ingredient.get('name'),
+                amount=request_ingredient.get('amount'),
+                units=request_ingredient.get('units'))[0])
+        author = get_object_or_404(User, username=self.request.user)
+        tags = Tag.objects.filter(name__in=request_tags)
+        serializer = self.get_serializer(instance,
+                                         data=request.data,
+                                         partial=True)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        serializer.save(ingredient=ingredients,
+                        tag=tags,
+                        author=author)
+        return Response(serializer.data)
 
 
 class FollowListCreateAPIView(ListCreateAPIView):
@@ -198,7 +252,13 @@ class FollowListCreateAPIView(ListCreateAPIView):
     model = Follow
 
     def get_queryset(self):
-        queryset = Follow.objects.filter(user=self.request.user)
+        if self.request.query_params.get('author'):
+            queryset = Follow.objects.filter(
+                author__username=self.request.query_params.get('author'),
+                user=self.request.user)
+
+        else:
+            queryset = Follow.objects.filter(user=self.request.user)
         return queryset
 
     def perform_create(self, serializer):
@@ -246,11 +306,17 @@ class FavoriteAPIView(
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticated, ]
-    # pagination_class = None
+    filter_backends = [DjangoFilterBackend, ]
+    filter_fields = ['author__username', ]
 
     def get_queryset(self):
-
-        queryset = Recipe.objects.filter(subscribers=self.request.user)
+        tag_list = self.request.GET.getlist("tag__name")
+        if tag_list:
+            queryset = Recipe.objects.filter(
+                subscribers=self.request.user,
+                tag__name__in=tag_list).distinct()
+        else:
+            queryset = Recipe.objects.filter(subscribers=self.request.user)
         return queryset
 
     def create(self, request, *args, **kwargs):
@@ -276,6 +342,7 @@ class PurchaseAPIView(mixins.CreateModelMixin,
     queryset = Purchase.objects.all()
     serializer_class = PurchaseSerializer
     permission_classes = [IsAuthenticated, ]
+    pagination_class = None
 
     def get_queryset(self):
         queryset = Purchase.objects.filter(user=self.request.user)
