@@ -47,7 +47,7 @@ function Recipes({
   }
 
   useEffect(() => {
-    if (currentUser.name) {
+    if (params.author && currentUser.name) {
       api.getSubscriptions({ author: `&author=${params.author}` })
         .then((data) => {
           if (data.results) setIsUserIsSubscribed(data.results.length > 0);
@@ -59,7 +59,7 @@ function Recipes({
   }, [currentUser, params.author, subscriptions]);
 
   useEffect(() => {
-    if (params.author && currentUser.name) {
+    if (params.author) {
       setSelectedAuthor(`&author__username=${params.author}`);
     }
   }, [setSelectedAuthor, params, params.author]);

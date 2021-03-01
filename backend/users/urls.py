@@ -1,0 +1,14 @@
+from django.urls import path
+from .views import (
+    UserCreateAPIView,
+    UserView,
+    ChangePasswordView,
+)
+from rest_framework.authtoken import views
+
+urlpatterns = [
+    path('signin/', views.obtain_auth_token),
+    path('signup/', UserCreateAPIView.as_view()),
+    path('me/', UserView.as_view()),
+    path('change-password/', ChangePasswordView.as_view()),
+]

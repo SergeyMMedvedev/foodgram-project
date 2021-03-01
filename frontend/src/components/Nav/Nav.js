@@ -22,7 +22,7 @@ function Nav({ isLoggedIn, onExit, purchasesRecipes }) {
         ) : (
           <ul className="nav__items list">
             <li className="nav__item nav__item_disabled"><NavLink exact to="/" activeClassName="nav__link_active" className="nav__link link">Рецепты</NavLink></li>
-            <li className="nav__item nav__item_disabled"><NavLink to="/shop-list" activeClassName="nav__link_active" className="nav__link link">Список покупок</NavLink></li>
+            <li className="nav__item nav__item_disabled"><p className="nav__link link nav__link_disabled">Список покупок</p></li>
           </ul>
         )}
         {isLoggedIn ? (

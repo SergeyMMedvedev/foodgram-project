@@ -11,9 +11,11 @@ import renderTags from '../../utils/renderTags';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
 import CurrentUserContext from '../../context/CurrentUserContext';
 import { getCurrentPageNumber, getCurrentPageNumberWithRemovingItems } from '../../utils/pagination';
+import Button from '../Button/Button';
 
 function Card({
   allRecipesPage,
+  favoriteRecipesPage,
   subscribers,
   recipeId,
   recipeName,
@@ -35,11 +37,23 @@ function Card({
   }
 
   function handleAddToFavorites() {
-    onAddToFavorites(recipeId, getCurrentPageNumber(pagination), selectedAuthor);
+    onAddToFavorites(
+      recipeId,
+      getCurrentPageNumber(pagination),
+      selectedAuthor,
+      allRecipesPage,
+      favoriteRecipesPage,
+    );
   }
 
   function handleRemoveFromFavorites() {
-    onDeleteFromFavorites(recipeId, allRecipesPage ? getCurrentPageNumber(pagination) : getCurrentPageNumberWithRemovingItems(pagination), selectedAuthor);
+    onDeleteFromFavorites(
+      recipeId,
+      allRecipesPage ? getCurrentPageNumber(pagination) : getCurrentPageNumberWithRemovingItems(pagination),
+      selectedAuthor,
+      allRecipesPage,
+      favoriteRecipesPage,
+    );
   }
 
   // function handleAuthorClick(e) {
@@ -81,15 +95,37 @@ function Card({
         </div>
       </div>
       <div className="card__footer">
-        <button onClick={handleAddToPurchase} type="button" className="button button_style_light-blue" name="purchases" data-out>
+        <Button
+          text={(
+            <>
+              <span className="icon-plus button__icon" />
+              Добавить в покупки
+            </>
+          )}
+          onClick={handleAddToPurchase}
+          lightBlue
+          notAuth={!currentUser.name}
+          disabled={!currentUser.name}
+        />
+        {/* <button onClick={handleAddToPurchase} type="button" className="button button_style_light-blue" name="purchases" data-out>
           <span className="icon-plus button__icon" />
           Добавить в покупки
-        </button>
-        <button onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites} type="button" className="button cnbutton_style_none" name="favorites" data-out>
-          <IconFavorite
-            active={isCardFavorite}
-          />
-        </button>
+        </button> */}
+        {currentUser.name && (
+          <button
+            onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites}
+            type="button"
+            className="button cnbutton_style_none"
+            name="favorites"
+            data-out
+            disabled={!currentUser.name}
+          >
+            <IconFavorite
+              active={isCardFavorite}
+            />
+          </button>
+        )}
+
       </div>
     </div>
   );

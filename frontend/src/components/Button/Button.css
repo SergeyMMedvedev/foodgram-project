@@ -1,4 +1,5 @@
 .button {
+  position: relative;
   font-family: 'Montserrat', sans-serif;
   font-style: normal;
   font-weight: 600;
@@ -73,11 +74,13 @@
 }
 
 .button_disabled {
-  background-color: #cfcfcf;
   color: #a8a8a8;
+  background-color: #d3d3d3;
+  opacity: .5;
 }
 
 .button_disabled:hover {
-  background-color: #cfcfcf;
   color: #a8a8a8;
+  background-color: #d3d3d3;
+  opacity: .5;
 }

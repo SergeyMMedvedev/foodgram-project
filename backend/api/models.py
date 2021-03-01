@@ -74,23 +74,6 @@ class Follow(models.Model):
         return f"пользователь {self.user} подписан на {self.author}"
 
 
-# class Favorite(models.Model):
-#     user = models.ForeignKey(User,
-#                              on_delete=models.CASCADE,
-#                              related_name="user",
-#                              )
-#     favorite = models.ForeignKey(Recipe,
-#                                  on_delete=models.CASCADE,
-#                                  related_name="favorite",
-#                                  )
-#
-#     class Meta:
-#         unique_together = ('user', 'favorite')
-#
-#     def __str__(self):
-#         return f"пользователь {self.user} подписан на {self.favorite}"
-
-
 class Purchase(models.Model):
     user = models.ForeignKey(User,
                              on_delete=models.CASCADE,

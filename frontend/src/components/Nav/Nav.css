@@ -84,3 +84,13 @@
   height: 2px;
   background: #4A61DD;
 }
+
+.nav__link_disabled {
+  color: #cfcfcf;
+}
+
+.nav__link_disabled:hover {
+  color: #cfcfcf;
+  opacity: 1;
+  cursor: default;
+}

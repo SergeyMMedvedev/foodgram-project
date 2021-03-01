@@ -54,7 +54,7 @@ function CardUser({
                 <>
                   {recipesList.slice(3).length > 0 && (
                     <li className="card-user__item">
-                      <a href="#" className="card-user__link link">{`Еще ${(recipes.count - 3 > 0) && getNumberEnding((recipes.count - 3))}...`}</a>
+                      <Link to={`/recipes/${subscription.author}`} className="card-user__link link">{`Еще ${(recipes.count - 3 > 0) && `${recipes.count - 3} ${getNumberEnding((recipes.count - 3))}`}...`}</Link>
                     </li>
                   )}
                 </>

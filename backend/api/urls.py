@@ -3,17 +3,13 @@ from django.urls import path, include
 from .views import (
     IngredientViewSet,
     RecipeViewSet,
-    RecipeAPIView,
-    UserCreateAPIView,
-    UserView,
-    ChangePasswordView,
     FollowListCreateAPIView,
     FollowDestroyAPIView,
     FavoriteAPIView,
     PurchaseAPIView,
     download_purchases
 )
-from rest_framework.authtoken import views
+
 
 router = DefaultRouter()
 router.register(r'ingredients', IngredientViewSet, basename='ingredients')
@@ -24,11 +20,7 @@ router.register(r'purchases', PurchaseAPIView, basename='purchases')
 
 urlpatterns = [
     path('v1/', include(router.urls)),
-    path('v1/recipes2/', RecipeAPIView.as_view()),
-    path('v1/signin/', views.obtain_auth_token),
-    path('v1/signup/', UserCreateAPIView.as_view()),
-    path('v1/users/me/', UserView.as_view()),
-    path('v1/change-password/', ChangePasswordView.as_view()),
+    path('v1/users/', include('users.urls')),
     path('v1/subscriptions/', FollowListCreateAPIView.as_view()),
     path('v1/subscriptions/<int:pk>/', FollowDestroyAPIView.as_view()),
     path('v1/download/', download_purchases)

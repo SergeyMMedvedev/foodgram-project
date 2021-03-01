@@ -4,7 +4,6 @@ from .models import (
     Recipe,
     Tag,
     Follow,
-    # Favorite,
     Purchase
 )
 
@@ -34,13 +33,6 @@ class FollowAdmin(admin.ModelAdmin):
                     )
 
 
-# class FavoriteAdmin(admin.ModelAdmin):
-#     list_display = ('pk',
-#                     'user',
-#                     'favorite',
-#                     )
-
-
 class PurchaseAdmin(admin.ModelAdmin):
     list_display = ('pk',
                     'user',
@@ -52,5 +44,4 @@ admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
 admin.site.register(Tag, TagAdmin)
 admin.site.register(Follow, FollowAdmin)
-# admin.site.register(Favorite, FavoriteAdmin)
 admin.site.register(Purchase, PurchaseAdmin)

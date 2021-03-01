@@ -35,7 +35,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recipes, setRecipes] = useState([]);
   const [authorRecipes, setAuthorRecipes] = useState([]);
-
+  const [authorRecipesPagination, setAuthorRecipesPagination] = useState({});
   const [selectedAuthor, setSelectedAuthor] = useState('');
   // const [authorSlug, setAuthorSlug] = useState('');
   const [recipesPagination, setRecipesPagination] = useState({});
@@ -295,17 +295,21 @@ function App() {
       tagSupper,
     })
       .then((data) => {
-        // console.log(data);
         if (author) {
           setAuthorRecipes(data.results);
+          setAuthorRecipesPagination({
+            count: data.count,
+            next: data.next,
+            previous: data.previous,
+          });
         } else {
           setRecipes(data.results);
+          setRecipesPagination({
+            count: data.count,
+            next: data.next,
+            previous: data.previous,
+          });
         }
-        setRecipesPagination({
-          count: data.count,
-          next: data.next,
-          previous: data.previous,
-        });
       })
       .catch((err) => {
         console.log(err);
@@ -358,22 +362,22 @@ function App() {
       });
   }
 
-  function handleAddToFavorites(recipeId, page, author) {
+  function handleAddToFavorites(recipeId, page, author, allRecipesPage, favoriteRecipesPage) {
     api.addToFavoritesRecipes(recipeId)
       .then(() => {
-        getRecipes({ page, author });
-        getFavoritesRecipes({ page });
+        getRecipes(allRecipesPage ? { page, author } : {});
+        getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
       })
       .catch((err) => {
         console.log(err);
       });
   }
 
-  function handleRemoveFromFavorites(recipeId, page, author) {
+  function handleRemoveFromFavorites(recipeId, page, author, allRecipesPage, favoriteRecipesPage) {
     api.deleteFromFavoritesRecipes(recipeId)
       .then(() => {
-        getRecipes({ page, author });
-        getFavoritesRecipes({ page });
+        getRecipes(allRecipesPage ? { page, author } : {});
+        getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
       })
       .catch((err) => {
         console.log(err);
@@ -530,7 +534,18 @@ function App() {
               getFavoritesRecipes={getFavoritesRecipes}
             />
 
-            <Route path="/shop-list">
+            <ProtectedRoute
+              path="/shop-list"
+              header="Список покупок"
+              renderMainHeader={renderMainHeader}
+              component={ShopList}
+              purchasesRecipes={purchasesRecipes}
+              purchases={purchases}
+              onDeletePurchase={handleDeletePurchase}
+              onDownload={handleDownloadClick}
+            />
+
+            {/* <Route path="/shop-list">
               {renderMainHeader('Список покупок')}
               <ShopList
                 purchasesRecipes={purchasesRecipes}
@@ -538,7 +553,7 @@ function App() {
                 onDeletePurchase={handleDeletePurchase}
                 onDownload={handleDownloadClick}
               />
-            </Route>
+            </Route> */}
 
             <Route path="/single-page/:recipeId">
               <SingleRecipePage
@@ -560,7 +575,7 @@ function App() {
                 onAddToFavorites={handleAddToFavorites}
                 onDeleteFromFavorites={handleRemoveFromFavorites}
                 onAddPurchase={handleAddToPurchase}
-                recipesPagination={recipesPagination}
+                recipesPagination={authorRecipesPagination}
                 getRecipes={getRecipes}
                 onAuthorClick={handleAuthorClick}
                 selectedAuthor={selectedAuthor}

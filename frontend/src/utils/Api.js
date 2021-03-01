@@ -7,15 +7,6 @@ class Api {
   }
 
   async getRecipes(params) {
-    // let urlParams;
-    // if (author) {
-    //   urlParams = `/recipes?author=${author}`;
-    // } else {
-    //   urlParams = '/recipes';
-    // }
-    // const loadingRecipes = fetch((`${this.baseUrl}${urlParams}`), {
-    //   headers: this.headers,
-    // });
     const {
       page = 'page=1',
       author = '',
@@ -141,6 +132,7 @@ class Api {
   }
 
   async subscribe(author) {
+    console.log('POST subscribe');
     const loadingResponse = fetch((`${this.baseUrl}/subscriptions/`), {
       method: 'POST',
       headers: this.headers,
@@ -149,7 +141,9 @@ class Api {
       }),
     });
     const response = await loadingResponse;
+    console.log('response', response);
     const responseData = await response.json();
+    console.log('responseData', responseData);
     if (!response.ok) {
       const errors = [];
       Object.keys(responseData).forEach((key) => {

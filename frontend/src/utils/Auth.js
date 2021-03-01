@@ -7,7 +7,7 @@ class Auth {
   }
 
   async register(name, username, email, password) {
-    const loadingRegisterInfo = fetch(`${this.baseUrl}/signup/`, {
+    const loadingRegisterInfo = fetch(`${this.baseUrl}/users/signup/`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({
@@ -32,7 +32,7 @@ class Auth {
   }
 
   async authorize(username, password) {
-    const loadingAuthorizeInfo = fetch(`${this.baseUrl}/signin/`, {
+    const loadingAuthorizeInfo = fetch(`${this.baseUrl}/users/signin/`, {
       method: 'POST',
       headers: this.headers,
       body: JSON.stringify({ username, password }),
@@ -52,7 +52,7 @@ class Auth {
   }
 
   async changePassword(oldPassword, newPassword, newPasswordAgain) {
-    const loadingPasswordChangeInfo = fetch(`${this.baseUrl}/change-password/`, {
+    const loadingPasswordChangeInfo = fetch(`${this.baseUrl}/users/change-password/`, {
       method: 'PATCH',
       headers: this.headers,
       body: JSON.stringify({

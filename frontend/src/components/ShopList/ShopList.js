@@ -9,6 +9,8 @@ function ShopList({
   purchases,
   onDeletePurchase,
   onDownload,
+  header,
+  renderMainHeader,
 }) {
   useEffect(() => {
     console.log(purchases);
@@ -29,6 +31,7 @@ function ShopList({
 
   return (
     <>
+      {renderMainHeader(header)}
       <CardList column>
         <ul className="shopping-list">
           {purchasesRecipes.map((recipe, i) => (
