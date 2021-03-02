@@ -40,12 +40,10 @@ function FormRecipe({
   }
 
   function handleNameIngredientChange(e) {
-    console.log(e.target.value);
     setNameIngredient(e.target.value);
     if (e.target.value) {
       api.getIngredients(e.target.value)
         .then((data) => {
-          console.log('data ', data);
           setIngredientChoiseList(data);
         })
         .catch((err) => {
@@ -73,8 +71,6 @@ function FormRecipe({
       setNameIngredient('');
       setNameUnits('');
       setAmountUnits('');
-    } else {
-      console.log('заполните все поля ингредиента');
     }
   }
 

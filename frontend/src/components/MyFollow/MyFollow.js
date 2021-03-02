@@ -3,7 +3,6 @@ import './MyFollow.css';
 import CardList from '../CardList/CardList';
 import CardUser from '../CardUser/CardUser';
 import Pagination from '../Pagination/Pagination';
-// import api from '../../utils/Api';
 
 function MyFollow({
   onUnsubscribe,
@@ -13,7 +12,6 @@ function MyFollow({
   header,
   renderMainHeader,
 }) {
-  console.log('subscriptions', subscriptions);
   return (
     <>
       {renderMainHeader(header)}

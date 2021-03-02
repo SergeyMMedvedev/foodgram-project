@@ -115,12 +115,12 @@ function App() {
             setIsLoggedIn(true);
           }
         })
-        .catch((e) => {
+        .catch((err) => {
           localStorage.removeItem('jwt');
           setCurrentUser({});
           setIsLoggedIn(false);
           history.push('/signin');
-          console.log(e);
+          console.log(err);
         });
     } else {
       localStorage.removeItem('jwt');
@@ -164,8 +164,7 @@ function App() {
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
     api.postRecipe(recipe, formElem, token)
-      .then((respose) => {
-        console.log('respose', respose);
+      .then(() => {
         setServerError('');
         window.location.assign('/');
       })
@@ -179,8 +178,7 @@ function App() {
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
     api.updateRecipe(recipe, formElem, token, recipeId)
-      .then((respose) => {
-        console.log('respose', respose);
+      .then(() => {
         setServerError('');
         window.location.assign('/');
       })
@@ -282,7 +280,6 @@ function App() {
   }, [isLoggedIn]);
 
   function getRecipes(params) {
-    console.log('сейчас будут запрашиваться: ', params);
     const {
       page,
       author,
@@ -317,8 +314,6 @@ function App() {
   }
 
   function handleAuthorClick(authorName) {
-    console.log('handleAuthorClick');
-    // setAuthorSlug(authorName);
     getRecipes({ author: authorName });
   }
 
@@ -355,7 +350,6 @@ function App() {
     api.deletePurchase(purchaseId)
       .then(() => {
         getPurchases();
-        console.log('покупка удалена');
       })
       .catch((err) => {
         console.log(err);
@@ -385,12 +379,9 @@ function App() {
   }
 
   useEffect(() => {
-    console.log('app useEffect getRecipes');
     if (selectedAuthor) {
-      console.log('app useEffect getRecipes author: selectedAuthor');
       getRecipes({ author: selectedAuthor });
     } else {
-      console.log('app useEffect getRecipes author {}');
       getRecipes({});
     }
   }, [isLoggedIn, selectedAuthor]);
@@ -404,8 +395,6 @@ function App() {
   function handleDownloadClick(downloadPurchases) {
     api.download(downloadPurchases)
       .then((response) => {
-        console.log(response);
-
         downloadAsFile(response);
       })
       .catch((err) => {

@@ -36,7 +36,6 @@ function FormReg({ onSubmit, serverError }) {
 
   function handleRegistrationSubmit(e) {
     e.preventDefault();
-    console.log('handleRegistrationSubmit FromRegFields');
     onSubmit(name, username, email, password);
   }
 

@@ -27,7 +27,6 @@ function Card({
   onAddPurchase,
   pagination,
   selectedAuthor,
-  // onAuthorClick,
 }) {
   const [isCardFavorite, setIsCardFavorite] = useState(false);
   const currentUser = useContext(CurrentUserContext);
@@ -56,12 +55,7 @@ function Card({
     );
   }
 
-  // function handleAuthorClick(e) {
-  //   onAuthorClick(`&author__username=${e.target.value}`);
-  // }
-
   useEffect(() => {
-    // console.log('isSaved2', isSaved2);
     if (allRecipesPage) {
       const isSaved = subscribers.some((item) => (
         item.username === currentUser.username
@@ -107,23 +101,15 @@ function Card({
           notAuth={!currentUser.name}
           disabled={!currentUser.name}
         />
-        {/* <button onClick={handleAddToPurchase} type="button" className="button button_style_light-blue" name="purchases" data-out>
-          <span className="icon-plus button__icon" />
-          Добавить в покупки
-        </button> */}
         {currentUser.name && (
-          <button
+          <Button
             onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites}
-            type="button"
-            className="button cnbutton_style_none"
-            name="favorites"
-            data-out
-            disabled={!currentUser.name}
-          >
-            <IconFavorite
-              active={isCardFavorite}
-            />
-          </button>
+            text={(
+              <IconFavorite
+                active={isCardFavorite}
+              />
+            )}
+          />
         )}
 
       </div>

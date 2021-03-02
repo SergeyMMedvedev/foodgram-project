@@ -64,11 +64,6 @@ function Recipes({
     }
   }, [setSelectedAuthor, params, params.author]);
 
-  useEffect(() => {
-    console.log(params.author);
-    console.log(recipes);
-  }, [recipes]);
-
   return (
     <>
       {(params.author && params.author !== currentUser.name) && (

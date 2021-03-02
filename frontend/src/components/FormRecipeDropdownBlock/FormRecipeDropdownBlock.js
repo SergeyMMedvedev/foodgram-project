@@ -9,8 +9,6 @@ function FormRecipeDropdownBlock({
   const className = cn('form__dropdown-items', { 'form__dropdown-items_active': ingredientList.length > 0 });
 
   function handleClick(name, units) {
-    console.log('name', name);
-    console.log('units', units);
     onItemClick(name, units);
   }
 

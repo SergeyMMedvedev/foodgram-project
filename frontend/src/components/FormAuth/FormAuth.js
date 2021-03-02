@@ -25,8 +25,6 @@ function FormAuth({ onSubmit, serverError }) {
     onSubmit(username, password);
   }
 
-  console.log(usernameError || passwordError || (!username || !password));
-
   return (
     <Form
       onSubmit={handleLoginSubmit}

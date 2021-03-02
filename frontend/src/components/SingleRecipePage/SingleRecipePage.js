@@ -14,7 +14,6 @@ function SingleRecipePage({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
-  // favoriteRecipes
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
@@ -81,7 +80,6 @@ function SingleRecipePage({
   }, [recipe, currentUser.username]);
 
   useEffect(() => {
-    console.log(currentUser.name);
     if (currentUser.name) {
       api.getSubscriptions({ author: `&author=${recipe.author}` })
         .then((data) => {
