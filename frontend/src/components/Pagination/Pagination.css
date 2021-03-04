@@ -8,6 +8,17 @@
   }
 }
 
+@keyframes disappear-pagination-animation {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -43,7 +54,8 @@
   width: 40px;
   color: #000000;
   text-align: center;
-  animation: appear-pagination-animation .5s ease-out forwards;
+  transition: color .2s ease-in-out;
+  animation: appear-pagination-animation .2s ease-out forwards;
 }
 .pagination__item:first-child{
   margin-left: 0;
@@ -68,9 +80,17 @@
   width: 46px;
   height: 46px;
   opacity: 0;
-  animation: appear-pagination-animation .5s ease-out forwards;
+  transition: color .1s ease-in-out;
+  animation: appear-pagination-animation .2s linear forwards;
 }
 
+.pagination__item_deactive {
+  color: #000;
+}
+
+.pagination__item_deactive:after {
+  animation: disappear-pagination-animation .1s ease-out forwards;
+}
 
 
 

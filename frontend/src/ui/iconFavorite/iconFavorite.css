@@ -8,6 +8,7 @@
   background-color: transparent;
   border: none;
   outline: none;
+  transition: background-image .2s ease-in-out;
 }
 
 .icon-favorite_active {

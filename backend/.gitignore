@@ -155,3 +155,4 @@ yarn-error.log*
 
 # auxiliary files
 commands.txt
+sent_emails

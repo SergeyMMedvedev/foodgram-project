@@ -1,14 +1,16 @@
 import React, {
   useContext,
-  // useContext,
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import { Link } from 'react-router-dom';
 import './Card.css';
+import '../appearAnimation/appearAnimation.css';
 import testCardImg from '../../images/testCardImg.png';
 import renderTags from '../../utils/renderTags';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
+import IconPlus from '../../ui/iconPlus/iconPlus';
 import CurrentUserContext from '../../context/CurrentUserContext';
 import { getCurrentPageNumber, getCurrentPageNumberWithRemovingItems } from '../../utils/pagination';
 import Button from '../Button/Button';
@@ -30,6 +32,7 @@ function Card({
 }) {
   const [isCardFavorite, setIsCardFavorite] = useState(false);
   const currentUser = useContext(CurrentUserContext);
+  const cardRef = useRef();
 
   function handleAddToPurchase() {
     onAddPurchase(recipeId);
@@ -67,8 +70,8 @@ function Card({
   }, [subscribers]);
 
   return (
-    <div className="card" data-id={`recipe__${recipeId}`}>
-      <Link to={`/single-page/${recipeId}`} className="link">
+    <div ref={cardRef} className="card appearAnimation" data-id={`recipe__${recipeId}`}>
+      <Link to={`/single-page/${recipeId}`} className="link card__image-link">
         <img src={testCardImg} alt={recipeName} className="card__image" />
       </Link>
       <div className="card__body">
@@ -83,7 +86,6 @@ function Card({
           </p>
           <p className="card__text">
             <span className="icon-user" />
-            {/* <button value={author} onClick={handleAuthorClick} type="button" className="card__name-link">{` ${author}`}</button> */}
             <Link to={`/recipes/${author}`} className="card__name-link">{` ${author}`}</Link>
           </p>
         </div>
@@ -92,13 +94,12 @@ function Card({
         <Button
           text={(
             <>
-              <span className="icon-plus button__icon" />
+              <IconPlus />
               Добавить в покупки
             </>
           )}
           onClick={handleAddToPurchase}
           lightBlue
-          notAuth={!currentUser.name}
           disabled={!currentUser.name}
         />
         {currentUser.name && (

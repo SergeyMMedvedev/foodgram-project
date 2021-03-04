@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './MyFollow.css';
 import CardList from '../CardList/CardList';
 import CardUser from '../CardUser/CardUser';
@@ -12,22 +12,26 @@ function MyFollow({
   header,
   renderMainHeader,
 }) {
+  const followsRef = useRef();
   return (
     <>
       {renderMainHeader(header)}
-      <CardList>
-        {subscriptions.map((subscription) => (
-          <CardUser
-            key={subscription.id}
-            onUnsubscribe={onUnsubscribe}
-            subscription={subscription}
-            pagination={subscriptionsPagination}
-          />
-        ))}
-      </CardList>
+      <div ref={followsRef}>
+        <CardList>
+          {subscriptions.map((subscription) => (
+            <CardUser
+              key={subscription.id}
+              onUnsubscribe={onUnsubscribe}
+              subscription={subscription}
+              pagination={subscriptionsPagination}
+            />
+          ))}
+        </CardList>
+      </div>
       <Pagination
         pagination={subscriptionsPagination}
         getItems={getSubscriptions}
+        containerWithLoadableItemsRef={followsRef}
       />
     </>
   );

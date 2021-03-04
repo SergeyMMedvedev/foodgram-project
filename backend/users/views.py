@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage
 from rest_framework import status
 from rest_framework.generics import (
     CreateAPIView,
@@ -11,6 +12,7 @@ from .serializers import (
 )
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import (
     IsAuthenticated
@@ -90,3 +92,23 @@ class UserCreateAPIView(CreateAPIView):
             user_id=response.data["id"])
         response.data["token"] = str(token)
         return response
+
+
+@api_view(http_method_names=['POST'])
+@permission_classes((IsAuthenticated, ))
+def reset_password(request):
+    user_email = request.data.get('email')
+    if not user_email:
+        return Response({'email': 'это поле обязательно.'},
+                        status=status.HTTP_400_BAD_REQUEST)
+    user = get_object_or_404(User, email=user_email)
+
+    mail_subject = 'Activate your account.'
+    message = (f"you are: {user}\n"
+               f"password: {user.password}")
+    to_email = str(user_email)
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    email.send()
+    return Response({'email': f"сообщение отправлено на {to_email}"},
+                    status=status.HTTP_200_OK)
+

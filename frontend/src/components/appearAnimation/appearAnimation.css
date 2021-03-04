@@ -1,0 +1,29 @@
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes disappear {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.appearAnimation {
+  animation: appear .5s ease-out forwards 1 running;
+}
+
+.appearAnimationDelay {
+  animation: appear .5s .1s ease-out forwards 1 running;
+}
+
+.disappearAnimation {
+  animation: disappear .1s ease-in forwards 1 running;
+}

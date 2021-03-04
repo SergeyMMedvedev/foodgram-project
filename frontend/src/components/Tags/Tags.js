@@ -8,6 +8,9 @@ function Tags({
   onSetTagBreakfast,
   onSetTagTagDinner,
   onSetTagTagSupper,
+  tagBreakfast,
+  tagDinner,
+  tagSupper,
 }) {
   const tagListRef = useRef();
   function handleClick(e) {
@@ -36,6 +39,7 @@ function Tags({
   }
 
   useEffect(() => {
+    console.log('selectedTags', selectedTags);
     if (selectedTags) {
       if (selectedTags.length > 0 && tagListRef.current) {
         Array.prototype.slice.call(tagListRef.current.children).forEach((li) => {
@@ -44,6 +48,21 @@ function Tags({
       }
     }
   }, [selectedTags]);
+
+  // проверка, какие теги отмечены
+  useEffect(() => {
+    if (main && tagListRef.current) {
+      const elems = Array.prototype.slice.call(tagListRef.current.children);
+      const tags = [tagBreakfast, tagDinner, tagSupper].map((tag) => (
+        tag.replace('&tag__name=', '')
+      ));
+      elems.forEach((item) => {
+        if (tags.includes(item.firstChild.value)) {
+          item.firstChild.classList.add('tags__checkbox_active');
+        }
+      });
+    }
+  }, [tagBreakfast, tagDinner, tagSupper]);
 
   return (
     <ul ref={tagListRef} className="tags">

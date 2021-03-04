@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Pagination.css';
 // import cn from 'classnames';
 // import { API_BASE_URL } from '../../utils/constants';
@@ -11,20 +11,29 @@ import {
   handleNextClick,
 } from '../../utils/pagination';
 
-function Pagination({ pagination, getItems, selectedAuthor }) {
-  function handlePageClick(e) {
-    getItems({ page: e.target.value, author: selectedAuthor });
-  }
+function Pagination({
+  pagination,
+  getItems,
+  selectedAuthor,
+  containerWithLoadableItemsRef,
+}) {
+  const paginatorRef = useRef();
 
   return (
     <>
       {pagination.count > PAGE_SIZE && (
         <nav className="pagination" aria-label="Search results pages">
-          <ul className="pagination__container">
+          <ul ref={paginatorRef} className="pagination__container">
             <li className="pagination__item">
               <button
                 onClick={() => {
-                  handlePreviousClick(pagination, getItems, selectedAuthor);
+                  handlePreviousClick({
+                    pagination,
+                    getItems,
+                    selectedAuthor,
+                    paginatorRef,
+                    containerWithLoadableItemsRef,
+                  });
                 }}
                 type="button"
                 className="pagination__link link"
@@ -34,11 +43,23 @@ function Pagination({ pagination, getItems, selectedAuthor }) {
                 />
               </button>
             </li>
-            {renderPaginationItem(pagination, handlePageClick).map((item) => item)}
+            {renderPaginationItem({
+              pagination,
+              getItems,
+              selectedAuthor,
+              paginatorRef,
+              containerWithLoadableItemsRef,
+            }).map((item) => item)}
             <li className="pagination__item">
               <button
                 onClick={() => {
-                  handleNextClick(pagination, getItems, selectedAuthor);
+                  handleNextClick({
+                    pagination,
+                    getItems,
+                    selectedAuthor,
+                    paginatorRef,
+                    containerWithLoadableItemsRef,
+                  });
                 }}
                 type="button"
                 className="pagination__link link"

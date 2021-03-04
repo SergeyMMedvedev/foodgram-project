@@ -8,6 +8,7 @@ import {
 } from 'react-router-dom';
 
 import './App.css';
+import '../appearAnimation/appearAnimation.css';
 import Header from '../Header/Header';
 // import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
@@ -53,51 +54,7 @@ function App() {
   const [tagDinner, setTagDinner] = useState('');
   const [tagSupper, setTagSupper] = useState('');
 
-  function handleRegistrationSubmit(name, username, email, password) {
-    auth.register(name, username, email, password)
-      .then((newUserInfo) => {
-        if (newUserInfo.token) {
-          localStorage.setItem('token', newUserInfo.token);
-          api.headers.Authorization = `Token ${newUserInfo.token}`;
-          auth.headers.Authorization = `Token ${newUserInfo.token}`;
-          setCurrentUser({
-            name: newUserInfo.first_name,
-            username: newUserInfo.username,
-            email: newUserInfo.email,
-          });
-          setIsLoggedIn(true);
-          setServerError('');
-          history.push('/');
-        }
-      })
-      .catch((err) => {
-        setServerError(err);
-        console.log(err);
-      });
-  }
-
-  function handlePasswordChange(oldPassword, newPassword, newPasswordAgain) {
-    auth.changePassword(oldPassword, newPassword, newPasswordAgain)
-      .then(() => {
-        localStorage.removeItem('token');
-        setIsLoggedIn(false);
-        setCurrentUser({});
-        setServerError('');
-        history.push('/signin');
-      })
-      .catch((err) => {
-        console.log(err);
-        setServerError(err);
-      });
-  }
-
-  function handleExit() {
-    localStorage.removeItem('token');
-    setCurrentUser({});
-    setIsLoggedIn(false);
-    history.push('/signin');
-  }
-
+  // Users
   function tokenCheck() {
     const token = localStorage.getItem('token');
     if (token) {
@@ -134,6 +91,29 @@ function App() {
     tokenCheck();
   }, []);
 
+  function handleRegistrationSubmit(name, username, email, password) {
+    auth.register(name, username, email, password)
+      .then((newUserInfo) => {
+        if (newUserInfo.token) {
+          localStorage.setItem('token', newUserInfo.token);
+          api.headers.Authorization = `Token ${newUserInfo.token}`;
+          auth.headers.Authorization = `Token ${newUserInfo.token}`;
+          setCurrentUser({
+            name: newUserInfo.first_name,
+            username: newUserInfo.username,
+            email: newUserInfo.email,
+          });
+          setIsLoggedIn(true);
+          setServerError('');
+          history.push('/');
+        }
+      })
+      .catch((err) => {
+        setServerError(err);
+        console.log(err);
+      });
+  }
+
   function handleLoginSubmit(username, password) {
     auth.authorize(username, password)
       .then((data) => {
@@ -157,6 +137,70 @@ function App() {
       .catch((e) => {
         console.log(e);
         setServerError(e);
+      });
+  }
+
+  function handlePasswordChange(oldPassword, newPassword, newPasswordAgain) {
+    auth.changePassword(oldPassword, newPassword, newPasswordAgain)
+      .then(() => {
+        localStorage.removeItem('token');
+        setIsLoggedIn(false);
+        setCurrentUser({});
+        setServerError('');
+        history.push('/signin');
+      })
+      .catch((err) => {
+        console.log(err);
+        setServerError(err);
+      });
+  }
+
+  function handleExit() {
+    localStorage.removeItem('token');
+    setCurrentUser({});
+    setIsLoggedIn(false);
+    history.push('/signin');
+  }
+  // End users
+
+  // Recipes
+
+  function getRecipes(params) {
+    const {
+      page,
+      author,
+      loadedElementsContainer,
+    } = params;
+    api.getRecipes({
+      page,
+      author,
+      tagBreakfast,
+      tagDinner,
+      tagSupper,
+    })
+      .then((data) => {
+        if (author) {
+          setAuthorRecipes(data.results);
+          setAuthorRecipesPagination({
+            count: data.count,
+            next: data.next,
+            previous: data.previous,
+          });
+        } else {
+          setRecipes(data.results);
+          setRecipesPagination({
+            count: data.count,
+            next: data.next,
+            previous: data.previous,
+          });
+        }
+        if (loadedElementsContainer) {
+          loadedElementsContainer.classList.remove('disappearAnimation');
+          loadedElementsContainer.classList.add('appearAnimation');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
       });
   }
 
@@ -188,7 +232,8 @@ function App() {
       });
   }
 
-  function getSubscriptions(page) {
+  function getSubscriptions(params) {
+    const { page, loadedElementsContainer } = params;
     api.getSubscriptions({ page })
       .then((subscriptionsData) => {
         setSubscriptions(subscriptionsData.results);
@@ -197,6 +242,10 @@ function App() {
           next: subscriptionsData.next,
           previous: subscriptionsData.previous,
         });
+        if (loadedElementsContainer) {
+          loadedElementsContainer.classList.remove('disappearAnimation');
+          loadedElementsContainer.classList.add('appearAnimation');
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -207,7 +256,7 @@ function App() {
     api.subscribe(author)
       .then(() => {
         setIsUserisSubscribed(true);
-        getSubscriptions();
+        getSubscriptions({});
       })
       .catch((err) => {
         console.log(err);
@@ -218,7 +267,7 @@ function App() {
     const { subscriptionId, setIsUserisSubscribed, page } = params;
     api.unsubscribe(subscriptionId)
       .then(() => {
-        getSubscriptions(page);
+        getSubscriptions({ page });
         if (setIsUserisSubscribed) {
           setIsUserisSubscribed(false);
         }
@@ -231,6 +280,7 @@ function App() {
   function getFavoritesRecipes(params) {
     const {
       page,
+      loadedElementsContainer,
     } = params;
     api.getFavoritesRecipes({
       page,
@@ -249,6 +299,10 @@ function App() {
           next: favorites.next,
           previous: favorites.previous,
         });
+        if (loadedElementsContainer) {
+          loadedElementsContainer.classList.remove('disappearAnimation');
+          loadedElementsContainer.classList.add('appearAnimation');
+        }
       });
   }
 
@@ -278,40 +332,6 @@ function App() {
       getPurchases();
     }
   }, [isLoggedIn]);
-
-  function getRecipes(params) {
-    const {
-      page,
-      author,
-    } = params;
-    api.getRecipes({
-      page,
-      author,
-      tagBreakfast,
-      tagDinner,
-      tagSupper,
-    })
-      .then((data) => {
-        if (author) {
-          setAuthorRecipes(data.results);
-          setAuthorRecipesPagination({
-            count: data.count,
-            next: data.next,
-            previous: data.previous,
-          });
-        } else {
-          setRecipes(data.results);
-          setRecipesPagination({
-            count: data.count,
-            next: data.next,
-            previous: data.previous,
-          });
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
 
   function handleAuthorClick(authorName) {
     getRecipes({ author: authorName });
@@ -388,7 +408,7 @@ function App() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      getSubscriptions();
+      getSubscriptions({});
     }
   }, [isLoggedIn]);
 
@@ -402,15 +422,15 @@ function App() {
       });
   }
 
-  function renderTitleName(header, currentAuthor) {
+  function renderTitleName(currentAuthor) {
     return ` ${currentAuthor.replace('&author__username=', '')}`;
   }
 
   function renderMainHeader(header, currentAuthor) {
     return (
-      <div className="main__header">
+      <div className="main__header appearAnimation">
         <h1 className="main__title">
-          {currentAuthor ? renderTitleName(header, currentAuthor) : header}
+          {currentAuthor ? renderTitleName(currentAuthor) : header}
         </h1>
         {(['Рецепты', 'Избранное'].includes(header)) && (
           <Tags
@@ -418,6 +438,9 @@ function App() {
             onSetTagBreakfast={handleSetTagBreakfast}
             onSetTagTagDinner={handleSetTagDinner}
             onSetTagTagSupper={handleSetTagSupper}
+            tagBreakfast={tagBreakfast}
+            tagDinner={tagDinner}
+            tagSupper={tagSupper}
           />
         )}
       </div>
@@ -433,7 +456,7 @@ function App() {
           onExit={handleExit}
           purchasesRecipes={purchasesRecipes}
         />
-        <main className="main container">
+        <main className="container main">
 
           <Switch>
 
@@ -533,16 +556,6 @@ function App() {
               onDeletePurchase={handleDeletePurchase}
               onDownload={handleDownloadClick}
             />
-
-            {/* <Route path="/shop-list">
-              {renderMainHeader('Список покупок')}
-              <ShopList
-                purchasesRecipes={purchasesRecipes}
-                purchases={purchases}
-                onDeletePurchase={handleDeletePurchase}
-                onDownload={handleDownloadClick}
-              />
-            </Route> */}
 
             <Route path="/single-page/:recipeId">
               <SingleRecipePage

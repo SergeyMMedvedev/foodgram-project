@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './ShopListItem.css';
+import '../appearAnimation/appearAnimation.css';
 import testCardImg from '../../images/testCardImg.png';
 
 function ShopListItem({
@@ -8,12 +9,23 @@ function ShopListItem({
   onDeletePurchase,
   purchaseId,
 }) {
+  const shopItemRef = useRef();
   function handlePurchaseDelete() {
-    onDeletePurchase(purchaseId);
+    const promise = new Promise((resolve) => {
+      if (shopItemRef.current) {
+        shopItemRef.current.classList.add('disappearAnimation');
+      }
+      setTimeout(() => (
+        resolve('done')
+      ), 100);
+    });
+    promise.then(() => {
+      onDeletePurchase(purchaseId);
+    });
   }
 
   return (
-    <li className="shopping-list__item" data-id="111">
+    <li key={purchaseId} ref={shopItemRef} className="shopping-list__item" data-id="111">
       <div className="recipe recipe_reverse">
         <Link to={`/single-page/${recipe.id}`} className="recipe__image-link link">
           <img src={testCardImg} alt={recipe.name} className="recipe__image recipe__image_big" />

@@ -1,3 +1,11 @@
+
+.container {
+  max-width: 1200px;
+  padding: 0 15px;
+  margin: 0 auto;
+  width: 100%;
+}
+
 .main {
   padding-top: 60px;
   padding-bottom: 80px;

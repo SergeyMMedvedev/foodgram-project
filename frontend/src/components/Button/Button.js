@@ -9,6 +9,8 @@ function Button({
   sizeAuto,
   onClick,
   disabled,
+  sizeSubscribe,
+  styleNone,
 }) {
   const buttonClassBame = cn(
     'button',
@@ -16,6 +18,8 @@ function Button({
     { button_size_auto: sizeAuto },
     { button_style_blue: blue },
     { button_disabled: disabled },
+    { button_size_subscribe: sizeSubscribe },
+    { button_style_none: styleNone },
   );
   return (
     <button onClick={onClick} type="button" className={buttonClassBame} name="subscribe" disabled={disabled}>

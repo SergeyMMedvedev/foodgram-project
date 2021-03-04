@@ -1,4 +1,9 @@
-import React, { useEffect, useContext, useState } from 'react';
+import React, {
+  useEffect,
+  useContext,
+  useState,
+  useRef,
+} from 'react';
 import { useParams } from 'react-router-dom';
 import './Recipes.css';
 import CardList from '../CardList/CardList';
@@ -26,6 +31,7 @@ function Recipes({
   const params = useParams();
   const currentUser = useContext(CurrentUserContext);
   const [isUserIsSubscribed, setIsUserIsSubscribed] = useState(null);
+  const recipesRef = useRef();
 
   function handleSubscribe() {
     onSubscribe(params.author, setIsUserIsSubscribed);
@@ -85,32 +91,36 @@ function Recipes({
           </div>
         )
       )}
-      <CardList>
-        {recipes.map((recipe) => (
-          <Card
-            key={`card__${recipe.id}`}
-            allRecipesPage
-            subscribers={recipe.subscribers}
-            recipeId={recipe.id}
-            recipeName={recipe.name}
-            tags={recipe.tag}
-            cookingTime={recipe.cooking_time}
-            author={recipe.author}
-            onAddToFavorites={onAddToFavorites}
-            onDeleteFromFavorites={onDeleteFromFavorites}
-            onAddPurchase={onAddPurchase}
-            favoriteRecipes={favoriteRecipes}
-            pagination={recipesPagination}
-            onAuthorClick={onAuthorClick}
-            selectedAuthor={selectedAuthor}
-          />
-        ))}
-      </CardList>
+      <div ref={recipesRef}>
+        <CardList>
+          {recipes.map((recipe) => (
+            <Card
+              key={`card__${recipe.id}`}
+              allRecipesPage
+              subscribers={recipe.subscribers}
+              recipeId={recipe.id}
+              recipeName={recipe.name}
+              tags={recipe.tag}
+              cookingTime={recipe.cooking_time}
+              author={recipe.author}
+              onAddToFavorites={onAddToFavorites}
+              onDeleteFromFavorites={onDeleteFromFavorites}
+              onAddPurchase={onAddPurchase}
+              favoriteRecipes={favoriteRecipes}
+              pagination={recipesPagination}
+              onAuthorClick={onAuthorClick}
+              selectedAuthor={selectedAuthor}
+            />
+          ))}
+        </CardList>
+      </div>
       <Pagination
         pagination={recipesPagination}
         getItems={getRecipes}
         selectedAuthor={selectedAuthor}
+        containerWithLoadableItemsRef={recipesRef}
       />
+
     </>
   );
 }

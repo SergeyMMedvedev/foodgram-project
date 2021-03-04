@@ -6,6 +6,10 @@ import api from '../../utils/Api';
 import renderTags from '../../utils/renderTags';
 import CurrentUserContext from '../../context/CurrentUserContext';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
+import Button from '../Button/Button';
+import IconPlus from '../../ui/iconPlus/iconPlus';
+import IconTime from '../../ui/iconTime/iconTime';
+import IconUser from '../../ui/iconUser/iconUser';
 
 function SingleRecipePage({
   onSubscribe,
@@ -107,44 +111,36 @@ function SingleRecipePage({
       if (isUserIsSubscribed === null) {
         return (
           <li className="single-card__item">
-            <button
+            <Button
+              text="Загрузка..."
               type="button"
-              className="button button_style_light-blue button_size_subscribe"
-              name="subscribe"
-              data-out
+              lightBlue
+              sizeSubscribe
               disabled
-            >
-              Загрузка...
-            </button>
+            />
           </li>
         );
       }
       if (isUserIsSubscribed) {
         return (
           <li className="single-card__item">
-            <button
-              type="button"
-              className="button button_style_light-blue button_size_subscribe"
-              name="subscribe"
-              data-out
+            <Button
+              text="Отписаться"
+              lightBlue
+              sizeSubscribe
               onClick={handleUnSubscribe}
-            >
-              Отписаться
-            </button>
+            />
           </li>
         );
       }
       return (
         <li className="single-card__item">
-          <button
-            type="button"
-            className="button button_style_light-blue button_size_subscribe"
-            name="subscribe"
-            data-out
+          <Button
+            text="Подписаться на автора"
             onClick={handleSubscribe}
-          >
-            Подписаться на автора
-          </button>
+            lightBlue
+            sizeSubscribe
+          />
         </li>
       );
     }
@@ -158,27 +154,31 @@ function SingleRecipePage({
         <div className="single-card__header-info">
           <h1 className="single-card__title">{recipe.name}</h1>
           <div className="single-card__favorite">
-            <button onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites} type="button" className="button button_style_none" name="favorites" data-out>
-              <IconFavorite
-                big
-                active={isCardFavorite}
-              />
-            </button>
+            <Button
+              onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites}
+              styleNone
+              text={(
+                <IconFavorite
+                  big
+                  active={isCardFavorite}
+                />
+              )}
+            />
             <div className="single-card__favorite-tooltip tooltip">Добавить в избранное</div>
           </div>
         </div>
         <ul className="single-card__items">
-          {renderTags(recipe.tags)}
+          {renderTags(recipe.tag)}
         </ul>
         <div className="single-card__items single-card__items_column">
           <p className="single-card__text">
-            <span className="icon-time" />
+            <IconTime />
             {` ${recipe.cooking_time} мин.`}
           </p>
           <ul className="single-card__items">
             <li className="single-card__item">
               <p className="single-card__text">
-                <span className="icon-user" />
+                <IconUser />
                 {recipe.author}
               </p>
             </li>
@@ -193,10 +193,17 @@ function SingleRecipePage({
         </div>
         <ul className="single-card__items">
           <li className="single-card__item">
-            <button onClick={handleAddToPurchase} type="button" className="button button_style_blue" name="purchases" data-out>
-              <span className="icon-plus" />
-              Добавить в покупки
-            </button>
+            <Button
+              onClick={handleAddToPurchase}
+              blue
+              disabled={!currentUser.name}
+              text={(
+                <>
+                  <IconPlus />
+                  Добавить в покупки
+                </>
+              )}
+            />
           </li>
           {renderSubscribeButton()}
         </ul>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import './Favorite.css';
 import CardList from '../CardList/CardList';
 import Card from '../Card/Card';
@@ -14,30 +14,34 @@ function Favorite({
   header,
   renderMainHeader,
 }) {
+  const favoriteRecipesRef = useRef();
   return (
     <>
       {renderMainHeader(header)}
-      <CardList>
-        {recipes.map((recipe) => (
-          <Card
-            key={`card__${recipe.id}`}
-            favoriteRecipesPage
-            subscribers={recipe.subscribers}
-            recipeId={recipe.id}
-            recipeName={recipe.name}
-            tags={recipe.tag}
-            cookingTime={recipe.cooking_time}
-            author={recipe.author}
-            onAddToFavorites={onAddToFavorites}
-            onDeleteFromFavorites={onDeleteFromFavorites}
-            onAddPurchase={onAddPurchase}
-            pagination={favoritesPagination}
-          />
-        ))}
-      </CardList>
+      <div ref={favoriteRecipesRef}>
+        <CardList>
+          {recipes.map((recipe) => (
+            <Card
+              key={`card__${recipe.id}`}
+              favoriteRecipesPage
+              subscribers={recipe.subscribers}
+              recipeId={recipe.id}
+              recipeName={recipe.name}
+              tags={recipe.tag}
+              cookingTime={recipe.cooking_time}
+              author={recipe.author}
+              onAddToFavorites={onAddToFavorites}
+              onDeleteFromFavorites={onDeleteFromFavorites}
+              onAddPurchase={onAddPurchase}
+              pagination={favoritesPagination}
+            />
+          ))}
+        </CardList>
+      </div>
       <Pagination
         pagination={favoritesPagination}
         getItems={getFavoritesRecipes}
+        containerWithLoadableItemsRef={favoriteRecipesRef}
       />
     </>
   );

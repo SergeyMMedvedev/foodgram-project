@@ -6,11 +6,20 @@
   box-sizing: border-box;
   border-radius: 8px;
   overflow: hidden;
+  transform-style: preserve-3d;
+  /* transform: translate3d(0, 0, 0); */
+}
+
+.card__image-link {
+  transform-style: preserve-3d;
+  transform: translate3d(0,0,100px);
 }
 
 .card__body {
   padding: 24px 24px 12px;
   flex: 1 0 auto;
+  transform-style: preserve-3d;
+  transform: translate3d(0,0,100px);
 }
 
 .card__footer {
@@ -19,6 +28,8 @@
   align-items: center;
   padding: 12px 24px 32px;
   flex: 0 0 auto;
+  transform-style: preserve-3d;
+  transform: translate3d(0,0,100px);
 }
 
 .card__image {

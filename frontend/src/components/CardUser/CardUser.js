@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './CardUser.css';
+import '../appearAnimation/appearAnimation.css';
 import Recipe from '../Recipe/Recipe';
 import api from '../../utils/Api';
 import getNumberEnding from '../../utils/getEndingsOfNumber';
@@ -34,7 +35,7 @@ function CardUser({
 
   return (
     <>
-      <div className="card-user" data-author={subscription.id}>
+      <div className="card-user appearAnimation" data-author={subscription.id}>
         <div className="card-user__header">
           <Link to={`/recipes/${subscription.author}`} className="card-user__title">{subscription.author}</Link>
         </div>
