@@ -5,6 +5,7 @@ import Form from '../Form/Form';
 import SubmitButton from '../SubmitButton/SubmitButton';
 
 function FormReg({ onSubmit, serverError }) {
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
   const [username, setUsername] = useState('');
@@ -35,8 +36,9 @@ function FormReg({ onSubmit, serverError }) {
   }
 
   function handleRegistrationSubmit(e) {
+    setLoading(true);
     e.preventDefault();
-    onSubmit(name, username, email, password);
+    onSubmit(name, username, email, password, setLoading);
   }
 
   return (
@@ -122,7 +124,8 @@ function FormReg({ onSubmit, serverError }) {
         <SubmitButton
           lightBlue
           text="Создать аккаунт"
-          disabled={nameError || usernameError || emailError || passwordError || (!name || !username || !email || !password)}
+          disabled={loading || nameError || usernameError || emailError || passwordError || (!name || !username || !email || !password)}
+          loading={loading}
         />
       </div>
     </Form>

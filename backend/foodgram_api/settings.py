@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django_filters',
     'api',
     'corsheaders',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    'django_rest_passwordreset',
 ]
 
 MIDDLEWARE = [

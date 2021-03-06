@@ -1,14 +1,22 @@
 import os
+import json
+from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
-from wsgiref.util import FileWrapper
-from django.shortcuts import HttpResponse
+from django.shortcuts import get_object_or_404, HttpResponse
+
 from rest_framework import status, mixins, viewsets
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import (
     ListCreateAPIView,
     DestroyAPIView,
 )
+from rest_framework.permissions import (
+    IsAuthenticated
+)
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.decorators import api_view, permission_classes
+from wsgiref.util import FileWrapper
+
 from .models import (
     Ingredient,
     Recipe,
@@ -22,13 +30,7 @@ from .serializers import (
     FollowSerializer,
     PurchaseSerializer,
 )
-from rest_framework.response import Response
-import json
-from django.contrib.auth import get_user_model
-from rest_framework.permissions import (
-    IsAuthenticated
-)
-from django.shortcuts import get_object_or_404
+
 
 User = get_user_model()
 
@@ -64,7 +66,6 @@ class RecipeViewSet(ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-
         request_ingredients = self.request.data.get('ingredient')
         request_ingredients = json.loads(request_ingredients)
         request_tags = self.request.data.get('tag')
@@ -128,7 +129,6 @@ class FollowListCreateAPIView(ListCreateAPIView):
         return queryset
 
     def perform_create(self, serializer):
-        print(self.request.data)
         author = get_object_or_404(User,
                                    username=self.request.data.get('author'))
         serializer.save(user=self.request.user,

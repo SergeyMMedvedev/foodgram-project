@@ -15,6 +15,7 @@ function FormRecipe({
   renderMainHeader,
 }) {
   const { recipeId } = useParams();
+  const [loading, setLoading] = useState(false);
   const [recipeName, setRecipeName] = useState('');
   const [recipeNameError, setRecipeNameError] = useState('');
   const [nameIngredient, setNameIngredient] = useState('');
@@ -94,19 +95,9 @@ function FormRecipe({
   }, []);
 
   function handleIngredientDelete(currentIngredient) {
-    addedIngredients.forEach((ingredient) => {
-      console.log('currentIngredient.name', currentIngredient.name);
-      console.log('ingredient.name === currentIngredient.name', ingredient.name === currentIngredient.name);
-      console.log('ingredient.amount.toString()', ingredient.amount.toString());
-      console.log('currentIngredient.amount', currentIngredient.amount);
-      console.log('ingredient.amount.toString() === currentIngredient.amount', ingredient.amount.toString() === currentIngredient.amount.toString());
-      console.log('пропускаем: ', !((ingredient.name === currentIngredient.name) && (ingredient.amount.toString() === currentIngredient.amount.toString())));
-    });
-    console.log('before addedIngredients', addedIngredients);
     const newAddedIngredients = addedIngredients.filter((ingredient) => (
       (!((ingredient.name === currentIngredient.name) && (ingredient.amount.toString() === currentIngredient.amount.toString())))
     ));
-    console.log('after newAddedIngredients', newAddedIngredients);
     setAddedIngredients(newAddedIngredients);
   }
 
@@ -130,6 +121,7 @@ function FormRecipe({
   }
 
   function handleFormRecipeSubmit(e) {
+    setLoading(true);
     const formElem = new FormData(formRef.current);
     e.preventDefault();
     const recipe = {
@@ -139,11 +131,8 @@ function FormRecipe({
       tag: tags,
       cooking_time: cookingTime,
       description,
-      // image: inputPhotoRef.current.files[0],
     };
-    console.log(recipe);
-    console.log(JSON.stringify(recipe));
-    onSubmit(recipe, formElem, localStorage.getItem('token'), recipeId);
+    onSubmit(recipe, formElem, localStorage.getItem('token'), recipeId, setLoading);
   }
 
   function handlePhotoDelete() {
@@ -167,7 +156,6 @@ function FormRecipe({
     );
     if (disabled) {
       setShowSubmitHint(true);
-      // console.log(showSubmitHint);
     } else {
       setShowSubmitHint(false);
     }
@@ -184,11 +172,9 @@ function FormRecipe({
   ]);
 
   useEffect(() => {
-    console.log('useEffect');
     if (recipeId) {
       api.getRecipe(recipeId)
         .then((data) => {
-          console.log(data);
           setRecipeName(data.name);
           setCookingTime(data.cooking_time);
           setDescription(data.description);
@@ -196,10 +182,8 @@ function FormRecipe({
           data.tag.forEach((tag) => (
             dataTags.push(tag.name)
           ));
-          // console.log('');
           setTags(dataTags);
           setAddedIngredients(data.ingredient);
-          setImage(data.image);
         })
         .catch((err) => {
           console.log(err);
@@ -405,7 +389,8 @@ function FormRecipe({
               blue
               text="Создать рецепт"
               disabled={
-                recipeNameError
+                loading
+                || recipeNameError
                 || cookingTimeError
                 || descriptionError
                 || (
@@ -417,6 +402,7 @@ function FormRecipe({
                   || (!image && !recipeId)
                 )
               }
+              loading={loading}
             />
           </div>
         </div>

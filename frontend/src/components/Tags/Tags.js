@@ -39,7 +39,6 @@ function Tags({
   }
 
   useEffect(() => {
-    console.log('selectedTags', selectedTags);
     if (selectedTags) {
       if (selectedTags.length > 0 && tagListRef.current) {
         Array.prototype.slice.call(tagListRef.current.children).forEach((li) => {

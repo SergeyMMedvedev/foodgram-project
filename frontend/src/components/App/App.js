@@ -10,7 +10,6 @@ import {
 import './App.css';
 import '../appearAnimation/appearAnimation.css';
 import Header from '../Header/Header';
-// import Main from '../Main/Main';
 import Footer from '../Footer/Footer';
 import Tags from '../Tags/Tags';
 import Recipes from '../Recipes/Recipes';
@@ -24,6 +23,7 @@ import Favorite from '../Favorite/Favorite';
 import ShopList from '../ShopList/ShopList';
 import SingleRecipePage from '../SingleRecipePage/SingleRecipePage';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
+import InfoTooltip from '../InfoTooltip/InfoTooltip';
 
 import api from '../../utils/Api';
 import auth from '../../utils/Auth';
@@ -38,21 +38,38 @@ function App() {
   const [authorRecipes, setAuthorRecipes] = useState([]);
   const [authorRecipesPagination, setAuthorRecipesPagination] = useState({});
   const [selectedAuthor, setSelectedAuthor] = useState('');
-  // const [authorSlug, setAuthorSlug] = useState('');
+  const [resetPasswordResponse, setResetPasswordResponse] = useState('');
   const [recipesPagination, setRecipesPagination] = useState({});
   const [favoritesPagination, setFavoritesPagination] = useState({});
   const [currentUser, setCurrentUser] = useState({});
-  // const [currentFavoritesData, setCurrentFavoritesData] = useState([]);
   const [favoriteRecipes, setFavoriteRecipes] = useState([]);
   const [serverError, setServerError] = useState('');
   const [subscriptions, setSubscriptions] = useState([]);
   const [subscriptionsPagination, setSubscriptionsPagination] = useState({});
   const [purchases, setPurchases] = useState([]);
-  const [purchasesRecipes, setPurchasesRecipes] = useState([]);
 
   const [tagBreakfast, setTagBreakfast] = useState('');
   const [tagDinner, setTagDinner] = useState('');
   const [tagSupper, setTagSupper] = useState('');
+
+  const [isOpenInfoTooltip, setIsOpenInfoTooltip] = useState(false);
+  const [responseError, setResponseError] = useState('');
+
+  function closeAllPopups() {
+    setIsOpenInfoTooltip(false);
+  }
+
+  useEffect(() => {
+    function handleEscClose(evt) {
+      if (evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+    document.addEventListener('keydown', handleEscClose);
+    return () => {
+      document.removeEventListener('keydown', handleEscClose);
+    };
+  }, []);
 
   // Users
   function tokenCheck() {
@@ -77,7 +94,8 @@ function App() {
           setCurrentUser({});
           setIsLoggedIn(false);
           history.push('/signin');
-          console.log(err);
+          setResponseError(err);
+          setIsOpenInfoTooltip(true);
         });
     } else {
       localStorage.removeItem('jwt');
@@ -91,7 +109,7 @@ function App() {
     tokenCheck();
   }, []);
 
-  function handleRegistrationSubmit(name, username, email, password) {
+  function handleRegistrationSubmit(name, username, email, password, setLoading) {
     auth.register(name, username, email, password)
       .then((newUserInfo) => {
         if (newUserInfo.token) {
@@ -110,11 +128,13 @@ function App() {
       })
       .catch((err) => {
         setServerError(err);
-        console.log(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
-  function handleLoginSubmit(username, password) {
+  function handleLoginSubmit(username, password, setLoading) {
     auth.authorize(username, password)
       .then((data) => {
         if (data.token) {
@@ -135,12 +155,14 @@ function App() {
         }
       })
       .catch((e) => {
-        console.log(e);
         setServerError(e);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
-  function handlePasswordChange(oldPassword, newPassword, newPasswordAgain) {
+  function handlePasswordChange(oldPassword, newPassword, newPasswordAgain, setLoading) {
     auth.changePassword(oldPassword, newPassword, newPasswordAgain)
       .then(() => {
         localStorage.removeItem('token');
@@ -150,8 +172,24 @@ function App() {
         history.push('/signin');
       })
       .catch((err) => {
-        console.log(err);
         setServerError(err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  function handlePasswordReset(email, setLoading) {
+    auth.resetPassword(email)
+      .then((data) => {
+        setResetPasswordResponse(data);
+        setServerError('');
+      })
+      .catch((err) => {
+        setServerError(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -200,7 +238,8 @@ function App() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -213,22 +252,23 @@ function App() {
         window.location.assign('/');
       })
       .catch((err) => {
-        console.log('handleRecipeSubmit', err);
         setServerError(err);
       });
   }
 
-  function handleRecipeUpdate(recipe, formElem, token, recipeId) {
+  function handleRecipeUpdate(recipe, formElem, token, recipeId, setLoading) {
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
-    api.updateRecipe(recipe, formElem, token, recipeId)
+    api.updateRecipe(formElem, token, recipeId)
       .then(() => {
         setServerError('');
         window.location.assign('/');
       })
       .catch((err) => {
-        console.log('handleRecipeSubmit', err);
         setServerError(err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   }
 
@@ -248,7 +288,8 @@ function App() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -259,7 +300,8 @@ function App() {
         getSubscriptions({});
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -273,7 +315,8 @@ function App() {
         }
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -315,15 +358,11 @@ function App() {
   function getPurchases() {
     api.getPurchases()
       .then((purchasesData) => {
-        const purchasesRiceps = [];
-        purchasesData.forEach((item) => (
-          purchasesRiceps.push(item.purchase)
-        ));
         setPurchases(purchasesData);
-        setPurchasesRecipes(purchasesRiceps);
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -362,7 +401,8 @@ function App() {
         getPurchases();
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -372,7 +412,8 @@ function App() {
         getPurchases();
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -383,7 +424,8 @@ function App() {
         getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -394,7 +436,8 @@ function App() {
         getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -418,7 +461,8 @@ function App() {
         downloadAsFile(response);
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -454,7 +498,7 @@ function App() {
         <Header
           isLoggedIn={isLoggedIn}
           onExit={handleExit}
-          purchasesRecipes={purchasesRecipes}
+          purchases={purchases}
         />
         <main className="container main">
 
@@ -493,7 +537,13 @@ function App() {
 
             <Route path="/reset-password">
               {renderMainHeader('Сброс пароля')}
-              <FormResetPassword />
+              <FormResetPassword
+                onSubmit={handlePasswordReset}
+                serverError={serverError}
+                resetPasswordResponse={resetPasswordResponse}
+                setServerError={setServerError}
+                setResetPasswordResponse={setResetPasswordResponse}
+              />
             </Route>
 
             <Route path="/change-password">
@@ -551,7 +601,7 @@ function App() {
               header="Список покупок"
               renderMainHeader={renderMainHeader}
               component={ShopList}
-              purchasesRecipes={purchasesRecipes}
+              // purchasesRecipes={purchasesRecipes}
               purchases={purchases}
               onDeletePurchase={handleDeletePurchase}
               onDownload={handleDownloadClick}
@@ -591,6 +641,13 @@ function App() {
             <Route>
               <Redirect to="/" />
             </Route>
+
+            <InfoTooltip
+              isOpen={isOpenInfoTooltip}
+              onClose={closeAllPopups}
+              responseError={responseError}
+              setResponseError={setResponseError}
+            />
 
           </Switch>
         </main>

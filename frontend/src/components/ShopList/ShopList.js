@@ -5,7 +5,7 @@ import ShopListItem from '../ShopListItem/ShopListItem';
 import Button from '../Button/Button';
 
 function ShopList({
-  purchasesRecipes,
+  // purchasesRecipes,
   purchases,
   onDeletePurchase,
   onDownload,
@@ -16,16 +16,18 @@ function ShopList({
     onDownload(purchases);
   }
 
+  console.log('purchases', purchases);
+
   return (
     <>
       {renderMainHeader(header)}
       <CardList column>
         <ul className="shopping-list">
-          {purchasesRecipes.map((recipe, i) => (
+          {purchases.map((purchaseData) => (
             <ShopListItem
-              key={purchases[i] && purchases[i].id}
-              recipe={recipe}
-              purchaseId={purchases[i] && purchases[i].id}
+              key={purchaseData.id}
+              recipe={purchaseData.purchase}
+              purchaseId={purchaseData.id}
               onDeletePurchase={onDeletePurchase}
             />
           ))}
@@ -35,7 +37,7 @@ function ShopList({
           blue
           text="Скачать список"
           onClick={handleDownload}
-          disabled={purchasesRecipes.length < 1}
+          disabled={purchases.length < 1}
         />
 
       </CardList>
@@ -43,4 +45,4 @@ function ShopList({
   );
 }
 
-export default ShopList;
+export default React.memo(ShopList);

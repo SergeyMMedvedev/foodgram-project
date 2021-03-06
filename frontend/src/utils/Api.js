@@ -14,7 +14,6 @@ class Api {
       tagDinner = '',
       tagSupper = '',
     } = params;
-    // console.log((`${this.baseUrl}/recipes/?${page}${author}${tagBreakfast}${tagDinner}${tagSupper}`));
     const loadingRecipes = fetch((`${this.baseUrl}/recipes/?${page}${author}${tagBreakfast}${tagDinner}${tagSupper}`), {
       headers: this.headers,
     });
@@ -78,10 +77,15 @@ class Api {
     });
   }
 
-  async updateRecipe(recipe, formElem, token, recipeId) {
-    if (!formElem.get('image')) {
+  async updateRecipe(formElem, token, recipeId) {
+    const image = formElem.get('image');
+    // если фотография не передается при редактировании рецепта, то надо исключить
+    // это поле полностью, чтобы оно не передавалось пустым и не возникала ошибка сериализации
+    // фотография останется, какая было до редактирования
+    if (!image.name || !image.size) {
       formElem.delete('image');
     }
+    // токен передаем отдельно, т.к. this.headers не подходит из-за того, что body не json
     const loadingResponse = fetch((`${this.baseUrl}/recipes/${recipeId}/`), {
       method: 'PATCH',
       headers: {
@@ -105,7 +109,6 @@ class Api {
 
   async getSubscriptions(params) {
     const { page = 'page=1', author = '' } = params;
-    // console.log((`${this.baseUrl}/subscriptions/?${page}${author}`));
     const loadingResponse = fetch((`${this.baseUrl}/subscriptions/?${page}${author}`), {
       method: 'GET',
       headers: this.headers,
@@ -167,7 +170,6 @@ class Api {
       tagDinner = '',
       tagSupper = '',
     } = params;
-    // console.log((`${this.baseUrl}/favorites/?${page}${tagBreakfast}${tagDinner}${tagSupper}`));
     const loadingResponse = fetch((`${this.baseUrl}/favorites/?${page}${tagBreakfast}${tagDinner}${tagSupper}`), {
       method: 'GET',
       headers: this.headers,

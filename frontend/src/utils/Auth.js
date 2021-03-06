@@ -93,6 +93,26 @@ class Auth {
       resolve(selfData);
     });
   }
+
+  async resetPassword(email) {
+    const loadingResponse = fetch(`${this.baseUrl}/users/reset-password/`, {
+      method: 'POST',
+      headers: this.headers,
+      body: JSON.stringify({ email }),
+    });
+    const response = await loadingResponse;
+    const responseData = await response.json();
+    if (!response.ok) {
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
+    }
+    return new Promise((resolve) => {
+      resolve(responseData);
+    });
+  }
 }
 
 const auth = new Auth({

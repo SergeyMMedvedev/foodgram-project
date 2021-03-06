@@ -5,6 +5,7 @@ import Form from '../Form/Form';
 import SubmitButton from '../SubmitButton/SubmitButton';
 
 function FormChangePassword({ onSubmit, serverError }) {
+  const [loading, setLoading] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
   const [oldPasswordError, setOldPasswordError] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -28,8 +29,9 @@ function FormChangePassword({ onSubmit, serverError }) {
   }
 
   function handleChangePassword(e) {
+    setLoading(true);
     e.preventDefault();
-    onSubmit(oldPassword, newPassword, newPasswordAgain);
+    onSubmit(oldPassword, newPassword, newPasswordAgain, setLoading);
   }
 
   return (
@@ -94,7 +96,8 @@ function FormChangePassword({ onSubmit, serverError }) {
       <SubmitButton
         lightBlue
         text="Изменить пароль"
-        disabled={oldPasswordError || newPasswordError || newPasswordAgainError || (!oldPassword || !newPassword || !newPasswordAgain)}
+        disabled={loading || oldPasswordError || newPasswordError || newPasswordAgainError || (!oldPassword || !newPassword || !newPasswordAgain)}
+        loading={loading}
       />
     </Form>
   );

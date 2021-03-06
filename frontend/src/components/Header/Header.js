@@ -1,13 +1,13 @@
 import React from 'react';
 import Nav from '../Nav/Nav';
 
-function Header({ isLoggedIn, onExit, purchasesRecipes }) {
+function Header({ isLoggedIn, onExit, purchases }) {
   return (
     <header className="header">
       <Nav
         isLoggedIn={isLoggedIn}
         onExit={onExit}
-        purchasesRecipes={purchasesRecipes}
+        purchases={purchases}
       />
     </header>
   );

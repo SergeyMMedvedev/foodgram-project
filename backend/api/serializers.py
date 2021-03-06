@@ -1,3 +1,5 @@
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from .models import (
     Ingredient,
@@ -6,8 +8,6 @@ from .models import (
     Follow,
     Purchase
 )
-from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from users.serializers import UserSerializer
 
 User = get_user_model()
@@ -93,34 +93,6 @@ class FollowSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Follow
-
-
-# class FavoriteSerializer(serializers.ModelSerializer):
-#     user = serializers.SlugRelatedField(
-#         read_only=True,
-#         slug_field='username'
-#     )
-#     favorite = RecipeSerializer(read_only=True)
-#
-#     def validate(self, attrs):
-#         if self.context.get('request').method == 'POST':
-#             user = self.context.get('request').user
-#             recipe_id = self.context.get('request').data.get('favorite')
-#             print('validate')
-#             print('user', user)
-#             print('recipe_id', recipe_id)
-#             print('Favorite.objects.filter(favorite=recipe_id)', Favorite.objects.filter(favorite=recipe_id))
-#             queryset = Favorite.objects.filter(user=user)
-#             print('Favorite.objects.filter(user=user)', queryset)
-#             print('queryset.filter(favorite=recipe_id)', queryset.filter(favorite=recipe_id))
-#             if queryset.filter(favorite=recipe_id):
-#                 raise serializers.ValidationError(
-#                     'Вы уже добавили этот рецепт')
-#         return attrs
-#
-#     class Meta:
-#         fields = '__all__'
-#         model = Favorite
 
 
 class PurchaseSerializer(serializers.ModelSerializer):

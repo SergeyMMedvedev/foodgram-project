@@ -43,4 +43,4 @@ function ShopListItem({
   );
 }
 
-export default ShopListItem;
+export default React.memo(ShopListItem);

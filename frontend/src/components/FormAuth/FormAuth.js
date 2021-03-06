@@ -5,6 +5,7 @@ import SubmitButton from '../SubmitButton/SubmitButton';
 import Form from '../Form/Form';
 
 function FormAuth({ onSubmit, serverError }) {
+  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [password, setPassword] = useState('');
@@ -21,8 +22,9 @@ function FormAuth({ onSubmit, serverError }) {
   }
 
   function handleLoginSubmit(e) {
+    setLoading(true);
     e.preventDefault();
-    onSubmit(username, password);
+    onSubmit(username, password, setLoading);
   }
 
   return (
@@ -72,7 +74,8 @@ function FormAuth({ onSubmit, serverError }) {
         <SubmitButton
           lightBlue
           text="Войти"
-          disabled={usernameError || passwordError || (!username || !password)}
+          disabled={loading || usernameError || passwordError || (!username || !password)}
+          loading={loading}
         />
         <a href="/reset-password" className="form__forgot-link">Забыли пароль?</a>
       </div>

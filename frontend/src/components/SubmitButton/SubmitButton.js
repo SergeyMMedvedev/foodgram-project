@@ -8,6 +8,7 @@ function SubmitButton({
   lightBlue,
   sizeAuto,
   disabled,
+  loading,
 }) {
   const buttonClassBame = cn(
     'submit-button',
@@ -17,7 +18,7 @@ function SubmitButton({
     { 'submit-button_disabled': disabled },
   );
   return (
-    <input type="submit" className={buttonClassBame} name="subscribe" value={text} disabled={disabled} />
+    <input type="submit" className={buttonClassBame} name="subscribe" value={loading ? 'Отправка...' : text} disabled={disabled} />
   );
 }
 
