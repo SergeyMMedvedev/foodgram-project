@@ -49,7 +49,7 @@ class PurchaseAdmin(admin.ModelAdmin):
                     'purchase',
                     )
     empty_value_display = "-пусто-"
-    
+
 
 admin.site.register(Ingredient, IngredientAdmin)
 admin.site.register(Recipe, RecipeAdmin)
