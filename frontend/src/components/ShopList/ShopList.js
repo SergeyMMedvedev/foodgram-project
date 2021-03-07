@@ -16,8 +16,6 @@ function ShopList({
     onDownload(purchases);
   }
 
-  console.log('purchases', purchases);
-
   return (
     <>
       {renderMainHeader(header)}

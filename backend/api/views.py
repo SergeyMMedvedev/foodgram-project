@@ -66,10 +66,8 @@ class RecipeViewSet(ModelViewSet):
         return queryset
 
     def create(self, request, *args, **kwargs):
-        request_ingredients = self.request.data.get('ingredient')
-        request_ingredients = json.loads(request_ingredients)
-        request_tags = self.request.data.get('tag')
-        request_tags = json.loads(request_tags)
+        request_ingredients = json.loads(self.request.data.get('ingredient'))
+        request_tags = json.loads(self.request.data.get('tag'))
         ingredients = []
         for request_ingredient in request_ingredients:
             ingredients.append(Ingredient.objects.get_or_create(

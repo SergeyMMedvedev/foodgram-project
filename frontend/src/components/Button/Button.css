@@ -6,7 +6,7 @@
   font-size: 14px;
   background: none;
   border-radius: 6px;
-  padding: 12px 24px;
+  padding: 12px 20px;
   height: 48px;
   line-height: 1;
   text-decoration: none;
@@ -55,6 +55,18 @@
   color: #4A61DD;
 }
 
+.button_style_light-orange {
+  background: #f1efdf;
+  color: #ddc74a;
+  transition: background 0.2s,
+              color 0.2s;
+}
+
+.button_style_light-orange:hover {
+  background: #fff1d8;
+  color: #dd914a;
+}
+
 .button_style_none {
   padding: 0;
 }
@@ -84,3 +96,15 @@
   background-color: #d3d3d3;
   opacity: .5;
 }
+
+.button_style_underline {
+  margin-left: 20px;
+  font-size: 16px;
+  text-decoration: underline;
+  transition: opacity .1s ease-in-out;
+}
+
+.button_style_underline:hover {
+  opacity: .6;
+}
+

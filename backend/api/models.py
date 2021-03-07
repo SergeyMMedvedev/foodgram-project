@@ -10,12 +10,20 @@ class Ingredient(models.Model):
     units = models.CharField(max_length=40, verbose_name='единицы измерения')
     amount = models.PositiveIntegerField(verbose_name='количество', default=0)
 
+    class Meta:
+        verbose_name = 'ингредиент'
+        verbose_name_plural = 'ингредиенты'
+
     def __str__(self):
         return self.name
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=40, verbose_name='тег')
+
+    class Meta:
+        verbose_name = 'тег'
+        verbose_name_plural = 'теги'
 
     def __str__(self):
         return self.name
@@ -54,8 +62,16 @@ class Recipe(models.Model):
                                          related_name='subscribers',
                                          blank=True)
 
+    pub_date = models.DateTimeField('Дата публикации',
+                                    auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'рецепт'
+        verbose_name_plural = 'рецепты'
+        ordering = ['-pub_date']
+
     def __str__(self):
-        return f"рецепт от {self.author}, с названием {self.name}"
+        return f"рецепт от {self.author}, под названием {self.name}"
 
 
 class Follow(models.Model):
@@ -69,6 +85,9 @@ class Follow(models.Model):
                                )
 
     class Meta:
+        verbose_name = 'подписка'
+        verbose_name_plural = 'подписки'
+        ordering = ['-id']
         unique_together = ('user', 'author')
 
     def __str__(self):
@@ -84,6 +103,10 @@ class Purchase(models.Model):
                                  on_delete=models.CASCADE,
                                  related_name="purchase",
                                  )
+
+    class Meta:
+        verbose_name = 'покупка'
+        verbose_name_plural = 'покупки'
 
     def __str__(self):
         return f"пользователь {self.user} покупает {self.purchase}"

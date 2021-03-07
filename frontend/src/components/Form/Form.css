@@ -54,7 +54,7 @@
   color: #FF0000;
   justify-self: start;
   grid-column: 1/-1;
-  min-height: 28px;
+  height: 10px;
   opacity: 0;
   transition: opacity .5s ease-in-out;
 }
@@ -62,7 +62,7 @@
 .form__error_server {
   width: 100%;
   text-align: center;
-  min-height: 0;
+  height: auto;
 }
 
 .form__error_active {
@@ -105,9 +105,6 @@
   grid-template-rows: auto;
   grid-template-columns: 1fr;
   align-items: center;
-
-  /*display: flex;*/
-  /*flex-direction: column;*/
   margin-left: auto;
   max-width: 370px;
   width: 100%;

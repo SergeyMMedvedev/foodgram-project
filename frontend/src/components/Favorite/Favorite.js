@@ -13,6 +13,8 @@ function Favorite({
   getFavoritesRecipes,
   header,
   renderMainHeader,
+  onDeletePurchase,
+  purchases,
 }) {
   const favoriteRecipesRef = useRef();
   return (
@@ -34,6 +36,8 @@ function Favorite({
               onDeleteFromFavorites={onDeleteFromFavorites}
               onAddPurchase={onAddPurchase}
               pagination={favoritesPagination}
+              onDeletePurchase={onDeletePurchase}
+              purchases={purchases}
             />
           ))}
         </CardList>

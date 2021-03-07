@@ -7,12 +7,16 @@ import Tags from '../Tags/Tags';
 import api from '../../utils/Api';
 import FormRecipeDropdownBlock from '../FormRecipeDropdownBlock/FormRecipeDropdownBlock';
 import SubmitButton from '../SubmitButton/SubmitButton';
+import Button from '../Button/Button';
 
 function FormRecipe({
   onSubmit,
   serverError,
   header,
   renderMainHeader,
+  onDelete,
+  setResponseError,
+  setIsOpenInfoTooltip,
 }) {
   const { recipeId } = useParams();
   const [loading, setLoading] = useState(false);
@@ -48,7 +52,8 @@ function FormRecipe({
           setIngredientChoiseList(data);
         })
         .catch((err) => {
-          console.log(err);
+          setResponseError(err);
+          setIsOpenInfoTooltip(true);
         });
     } else {
       setIngredientChoiseList([]);
@@ -140,6 +145,10 @@ function FormRecipe({
     setImage('');
   }
 
+  function handleDelete() {
+    onDelete(recipeId);
+  }
+
   useEffect(() => {
     const disabled = (
       recipeNameError
@@ -186,7 +195,8 @@ function FormRecipe({
           setAddedIngredients(data.ingredient);
         })
         .catch((err) => {
-          console.log(err);
+          setResponseError(err);
+          setIsOpenInfoTooltip(true);
         });
     }
   }, [recipeId]);
@@ -345,49 +355,55 @@ function FormRecipe({
           <div className="form__hint-container">
             {showSubmitHint
               && (
-              <div className="form__hint">
-                Необходимо:
-                {!recipeName && (
-                <>
-                  <br />
-                  <span> - Указать название рецепта</span>
-                </>
-                )}
-                {tags.length === 0 && (
-                <>
-                  <br />
-                  <span> - Хотя бы один тег (завтрак, обед или ужин)</span>
-                </>
-                )}
-                {addedIngredients.length === 0 && (
-                <>
-                  <br />
-                  <span> - Добавить хотя бы один ингредиент в список</span>
-                </>
-                )}
-                {!cookingTime && (
-                <>
-                  <br />
-                  <span> - Указать время приготовления</span>
-                </>
-                )}
-                {!description && (
-                <>
-                  <br />
-                  <span> - Добавить описание</span>
-                </>
-                )}
-                {(!image && !recipeId) && (
-                <>
-                  <br />
-                  <span> - Добавить фотографию</span>
-                </>
-                )}
-              </div>
+                <div className="form__hint">
+                  Необходимо:
+                  {!recipeName && (
+                    <>
+                      <br />
+                      <span> - Указать название рецепта</span>
+                    </>
+                  )}
+                  {tags.length === 0 && (
+                    <>
+                      <br />
+                      <span> - Хотя бы один тег (завтрак, обед или ужин)</span>
+                    </>
+                  )}
+                  {addedIngredients.length === 0 && (
+                    <>
+                      <br />
+                      <span> - Добавить хотя бы один ингредиент в список</span>
+                    </>
+                  )}
+                  {!cookingTime && (
+                    <>
+                      <br />
+                      <span> - Указать время приготовления</span>
+                    </>
+                  )}
+                  {!description && (
+                    <>
+                      <br />
+                      <span> - Добавить описание</span>
+                    </>
+                  )}
+                  {(!image && !recipeId) && (
+                    <>
+                      <br />
+                      <span> - Добавить фотографию</span>
+                    </>
+                  )}
+                  {((recipeNameError || cookingTimeError || descriptionError)) && (
+                    <>
+                      <br />
+                      <span> - Убедиться, что нет ошибок заполнения</span>
+                    </>
+                  )}
+                </div>
               )}
             <SubmitButton
               blue
-              text="Создать рецепт"
+              text={recipeId ? 'Сохранить' : 'Создать рецепт'}
               disabled={
                 loading
                 || recipeNameError
@@ -404,7 +420,15 @@ function FormRecipe({
               }
               loading={loading}
             />
+
           </div>
+          {recipeId && (
+            <Button
+              text="Удалить"
+              underline
+              onClick={handleDelete}
+            />
+          )}
         </div>
 
       </Form>

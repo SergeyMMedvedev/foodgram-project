@@ -11,6 +11,8 @@ function CardUser({
   onUnsubscribe,
   subscription,
   pagination,
+  setResponseError,
+  setIsOpenInfoTooltip,
 }) {
   const [recipesList, setRecipesList] = useState([]);
   const [recipes, setRecipes] = useState([]);
@@ -22,7 +24,8 @@ function CardUser({
         setRecipes(data);
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }, []);
 

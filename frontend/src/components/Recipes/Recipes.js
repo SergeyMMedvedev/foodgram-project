@@ -27,6 +27,10 @@ function Recipes({
   onSubscribe,
   onUnsubscribe,
   subscriptions,
+  onDeletePurchase,
+  purchases,
+  setResponseError,
+  setIsOpenInfoTooltip,
 }) {
   const params = useParams();
   const currentUser = useContext(CurrentUserContext);
@@ -48,7 +52,8 @@ function Recipes({
         }
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -59,7 +64,8 @@ function Recipes({
           if (data.results) setIsUserIsSubscribed(data.results.length > 0);
         })
         .catch((err) => {
-          console.log(err);
+          setResponseError(err);
+          setIsOpenInfoTooltip(true);
         });
     }
   }, [currentUser, params.author, subscriptions]);
@@ -73,7 +79,7 @@ function Recipes({
   return (
     <>
       {(params.author && params.author !== currentUser.name) && (
-        isUserIsSubscribed ? (
+        (isUserIsSubscribed) ? (
           <div className="recipe__button-container">
             <Button
               lightBlue
@@ -82,13 +88,15 @@ function Recipes({
             />
           </div>
         ) : (
-          <div className="recipe__button-container">
-            <Button
-              lightBlue
-              text="Подписаться на автора"
-              onClick={handleSubscribe}
-            />
-          </div>
+          currentUser.name && (
+            <div className="recipe__button-container">
+              <Button
+                lightBlue
+                text="Подписаться на автора"
+                onClick={handleSubscribe}
+              />
+            </div>
+          )
         )
       )}
       <div ref={recipesRef}>
@@ -110,6 +118,8 @@ function Recipes({
               pagination={recipesPagination}
               onAuthorClick={onAuthorClick}
               selectedAuthor={selectedAuthor}
+              onDeletePurchase={onDeletePurchase}
+              purchases={purchases}
             />
           ))}
         </CardList>

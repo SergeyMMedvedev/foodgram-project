@@ -243,6 +243,17 @@ function App() {
       });
   }
 
+  function handleDeleteRecipe(recipeId) {
+    api.deleteRecipe(recipeId)
+      .then(() => {
+        window.location.assign('/');
+        setServerError('');
+      })
+      .catch((err) => {
+        setServerError(err);
+      });
+  }
+
   function handleRecipeSubmit(recipe, formElem, token) {
     formElem.append('ingredient', JSON.stringify(recipe.ingredient));
     formElem.append('tag', JSON.stringify(recipe.tag));
@@ -389,6 +400,12 @@ function App() {
   }
 
   useEffect(() => {
+    // запрашиваем отвильтрованные по тегам рецепты,
+    // как для конкретного автора, так и для страницы со всеми рецептами и сохраненные рецепты
+    // тогда установленный фильтр работает по всем страницам и выделенные теги актуальны
+    if (selectedAuthor) {
+      getRecipes({ author: selectedAuthor });
+    }
     getRecipes({});
     if (isLoggedIn) {
       getFavoritesRecipes({});
@@ -516,6 +533,10 @@ function App() {
                 getRecipes={getRecipes}
                 onAuthorClick={handleAuthorClick}
                 setSelectedAuthor={setSelectedAuthor}
+                onDeletePurchase={handleDeletePurchase}
+                purchases={purchases}
+                setResponseError={setResponseError}
+                setIsOpenInfoTooltip={setIsOpenInfoTooltip}
               />
             </Route>
 
@@ -563,6 +584,8 @@ function App() {
               subscriptions={subscriptions}
               getSubscriptions={getSubscriptions}
               subscriptionsPagination={subscriptionsPagination}
+              setResponseError={setResponseError}
+              setIsOpenInfoTooltip={setIsOpenInfoTooltip}
             />
 
             <ProtectedRoute
@@ -572,6 +595,7 @@ function App() {
               component={FormRecipe}
               onSubmit={handleRecipeUpdate}
               serverError={serverError}
+              onDelete={handleDeleteRecipe}
             />
 
             <ProtectedRoute
@@ -581,6 +605,8 @@ function App() {
               component={FormRecipe}
               onSubmit={handleRecipeSubmit}
               serverError={serverError}
+              setResponseError={setResponseError}
+              setIsOpenInfoTooltip={setIsOpenInfoTooltip}
             />
 
             <ProtectedRoute
@@ -594,6 +620,8 @@ function App() {
               favoritesPagination={favoritesPagination}
               recipes={favoriteRecipes}
               getFavoritesRecipes={getFavoritesRecipes}
+              onDeletePurchase={handleDeletePurchase}
+              purchases={purchases}
             />
 
             <ProtectedRoute
@@ -601,7 +629,6 @@ function App() {
               header="Список покупок"
               renderMainHeader={renderMainHeader}
               component={ShopList}
-              // purchasesRecipes={purchasesRecipes}
               purchases={purchases}
               onDeletePurchase={handleDeletePurchase}
               onDownload={handleDownloadClick}
@@ -616,6 +643,10 @@ function App() {
                 onDeleteFromFavorites={handleRemoveFromFavorites}
                 onAddPurchase={handleAddToPurchase}
                 favoriteRecipes={favoriteRecipes}
+                onDeletePurchase={handleDeletePurchase}
+                purchases={purchases}
+                setResponseError={setResponseError}
+                setIsOpenInfoTooltip={setIsOpenInfoTooltip}
               />
             </Route>
 
@@ -635,6 +666,8 @@ function App() {
                 onSubscribe={handleSubscribe}
                 onUnsubscribe={handleUnsubscribe}
                 subscriptions={subscriptions}
+                onDeletePurchase={handleDeletePurchase}
+                purchases={purchases}
               />
             </Route>
 
@@ -642,14 +675,15 @@ function App() {
               <Redirect to="/" />
             </Route>
 
-            <InfoTooltip
-              isOpen={isOpenInfoTooltip}
-              onClose={closeAllPopups}
-              responseError={responseError}
-              setResponseError={setResponseError}
-            />
-
           </Switch>
+
+          <InfoTooltip
+            isOpen={isOpenInfoTooltip}
+            onClose={closeAllPopups}
+            responseError={responseError}
+            setResponseError={setResponseError}
+          />
+
         </main>
         <Footer />
       </CurrentUserContext.Provider>

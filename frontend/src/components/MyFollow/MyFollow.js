@@ -11,6 +11,8 @@ function MyFollow({
   subscriptionsPagination,
   header,
   renderMainHeader,
+  setResponseError,
+  setIsOpenInfoTooltip,
 }) {
   const followsRef = useRef();
   return (
@@ -24,6 +26,8 @@ function MyFollow({
               onUnsubscribe={onUnsubscribe}
               subscription={subscription}
               pagination={subscriptionsPagination}
+              setResponseError={setResponseError}
+              setIsOpenInfoTooltip={setIsOpenInfoTooltip}
             />
           ))}
         </CardList>

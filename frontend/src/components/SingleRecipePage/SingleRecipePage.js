@@ -8,6 +8,7 @@ import CurrentUserContext from '../../context/CurrentUserContext';
 import IconFavorite from '../../ui/iconFavorite/iconFavorite';
 import Button from '../Button/Button';
 import IconPlus from '../../ui/iconPlus/iconPlus';
+import IconMinus from '../../ui/iconMinus/iconMinus';
 import IconTime from '../../ui/iconTime/iconTime';
 import IconUser from '../../ui/iconUser/iconUser';
 
@@ -18,12 +19,17 @@ function SingleRecipePage({
   onAddToFavorites,
   onDeleteFromFavorites,
   onAddPurchase,
+  onDeletePurchase,
+  purchases,
+  setResponseError,
+  setIsOpenInfoTooltip,
 }) {
   const { recipeId } = useParams();
   const [recipe, setRecipe] = useState({});
   const [isUserIsSubscribed, setIsUserIsSubscribed] = useState(null);
   const currentUser = useContext(CurrentUserContext);
   const [isCardFavorite, setIsCardFavorite] = useState(false);
+  const [purchaseId, setPurchaseId] = useState('');
 
   function getRecipeData(id) {
     api.getRecipe(id)
@@ -31,7 +37,8 @@ function SingleRecipePage({
         setRecipe(data);
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
@@ -53,6 +60,10 @@ function SingleRecipePage({
     onSubscribe(recipe.author, setIsUserIsSubscribed);
   }
 
+  function handlePurchaseDelete() {
+    onDeletePurchase(purchaseId);
+  }
+
   function handleUnSubscribe() {
     api.getSubscriptions({ author: `&author=${recipe.author}` })
       .then((data) => {
@@ -64,13 +75,31 @@ function SingleRecipePage({
         }
       })
       .catch((err) => {
-        console.log(err);
+        setResponseError(err);
+        setIsOpenInfoTooltip(true);
       });
   }
 
   useEffect(() => {
     getRecipeData(recipeId);
   }, [recipeId]);
+
+  useEffect(() => {
+    if (purchases) {
+      if (purchases.length === 0) {
+        setPurchaseId('');
+      } else {
+        const purchase = purchases.find((item) => (
+          item.purchase.id.toString() === recipeId.toString()
+        ));
+        if (purchase) {
+          setPurchaseId(purchase.id);
+        } else {
+          setPurchaseId('');
+        }
+      }
+    }
+  }, [purchases, recipeId]);
 
   useEffect(() => {
     if (currentUser.name) {
@@ -177,10 +206,10 @@ function SingleRecipePage({
           </p>
           <ul className="single-card__items">
             <li className="single-card__item">
-              <p className="single-card__text">
+              <Link to={`/recipes/${recipe.author}`} className="single-card__name-link">
                 <IconUser />
-                {recipe.author}
-              </p>
+                {` ${recipe.author}`}
+              </Link>
             </li>
             <li className="single-card__item">
               {recipe.author === currentUser.name && (
@@ -193,17 +222,31 @@ function SingleRecipePage({
         </div>
         <ul className="single-card__items">
           <li className="single-card__item">
-            <Button
-              onClick={handleAddToPurchase}
-              blue
-              disabled={!currentUser.name}
-              text={(
-                <>
-                  <IconPlus />
-                  Добавить в покупки
-                </>
-              )}
-            />
+            {purchaseId ? (
+              <Button
+                text={(
+                  <>
+                    <IconMinus />
+                    Убрать из покупок
+                  </>
+                )}
+                onClick={handlePurchaseDelete}
+                lightOrange
+                disabled={!currentUser.name}
+              />
+            ) : (
+              <Button
+                text={(
+                  <>
+                    <IconPlus />
+                    Добавить в покупки
+                  </>
+                )}
+                onClick={handleAddToPurchase}
+                blue
+                disabled={!currentUser.name}
+              />
+            )}
           </li>
           {renderSubscribeButton()}
         </ul>

@@ -41,6 +41,20 @@ class Api {
     });
   }
 
+  async deleteRecipe(recipeId) {
+    const loadingRecipe = fetch((`${this.baseUrl}/recipes/${recipeId}`), {
+      method: 'DELETE',
+      headers: this.headers,
+    });
+    const response = await loadingRecipe;
+    if (!(response.status === 204)) {
+      return Promise.reject(`Ошибка: ${response.status}`);
+    }
+    return new Promise((resolve) => {
+      resolve(response.status);
+    });
+  }
+
   async getIngredients(startsWith) {
     const loadingIngredients = fetch((`${this.baseUrl}/ingredients?search=${startsWith}`), {
       headers: this.headers,
