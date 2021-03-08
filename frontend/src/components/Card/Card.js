@@ -24,6 +24,7 @@ function Card({
   recipeName,
   tags,
   cookingTime,
+  image,
   author,
   onAddToFavorites,
   onDeleteFromFavorites,
@@ -97,7 +98,7 @@ function Card({
   return (
     <div ref={cardRef} className="card appearAnimation" data-id={`recipe__${recipeId}`}>
       <Link to={`/single-page/${recipeId}`} className="link card__image-link">
-        <img src={testCardImg} alt={recipeName} className="card__image" />
+        <img src={image || testCardImg} alt={recipeName} className="card__image" />
       </Link>
       <div className="card__body">
         <Link className="card__title link" to={`/single-page/${recipeId}`}>{recipeName}</Link>

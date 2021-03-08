@@ -85,12 +85,16 @@ class Auth {
       },
     });
     const response = await contentInfo;
-    const selfData = await response.json();
+    const responseData = await response.json();
     if (!response.ok) {
-      return Promise.reject(`Ошибка: ${selfData.message}`);
+      const errors = [];
+      Object.keys(responseData).forEach((key) => {
+        errors.push(`${key}: ${responseData[key]}`);
+      });
+      return Promise.reject(`Ошибка! ${errors.join('\n')}`);
     }
     return new Promise((resolve) => {
-      resolve(selfData);
+      resolve(responseData);
     });
   }
 

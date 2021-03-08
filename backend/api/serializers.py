@@ -32,7 +32,6 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
-    print('asdfasdf')
     author = serializers.SlugRelatedField(
         read_only=True,
         slug_field='username'
@@ -48,6 +47,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         allow_empty_file=False,
         use_url=True,
     )
+    image_url = serializers.SerializerMethodField('get_image_url')
     ingredient = IngredientSerializer(
         many=True,
         read_only=True,
@@ -65,6 +65,12 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         fields = '__all__'
         model = Recipe
+
+    def get_image_url(self, recipe):
+        request = self.context.get('request')
+        if request:
+            image_url = recipe.image.url
+            return f"http://127.0.0.1{image_url}"
 
 
 class FollowSerializer(serializers.ModelSerializer):

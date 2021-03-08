@@ -110,6 +110,7 @@ function Recipes({
               recipeName={recipe.name}
               tags={recipe.tag}
               cookingTime={recipe.cooking_time}
+              image={recipe.image_url}
               author={recipe.author}
               onAddToFavorites={onAddToFavorites}
               onDeleteFromFavorites={onDeleteFromFavorites}

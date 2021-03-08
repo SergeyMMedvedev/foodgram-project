@@ -157,3 +157,5 @@ yarn-error.log*
 # auxiliary files
 commands.txt
 sent_emails
+commands-cloud.txt
+images

@@ -63,9 +63,15 @@ class RecipeViewSet(ModelViewSet):
                 tag__name__in=tag_list).distinct()
         else:
             queryset = Recipe.objects.all()
+            for obj in queryset:
+                print(obj.image)
+                print(type(obj.image))
         return queryset
 
     def create(self, request, *args, **kwargs):
+        image = self.request.data.get('image')
+        print(image)
+        print(type(image))
         request_ingredients = json.loads(self.request.data.get('ingredient'))
         request_tags = json.loads(self.request.data.get('tag'))
         ingredients = []
@@ -85,6 +91,9 @@ class RecipeViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
+        image = self.request.data.get('image')
+        print(image)
+        print(type(image))
         instance = self.get_object()
         request_ingredients = self.request.data.get('ingredient')
         request_ingredients = json.loads(request_ingredients)

@@ -77,10 +77,12 @@
   min-height: 15px;
   visibility: hidden;
   text-align: center;
+  display: none;
 }
 
 .popup__server-error_active {
   visibility: visible;
+  display: inline-block;
 }
 
 

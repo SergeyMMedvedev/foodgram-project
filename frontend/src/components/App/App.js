@@ -94,8 +94,9 @@ function App() {
           setCurrentUser({});
           setIsLoggedIn(false);
           history.push('/signin');
-          setResponseError(err);
-          setIsOpenInfoTooltip(true);
+          // setResponseError(err);
+          // setIsOpenInfoTooltip(true);
+          console.log(err);
         });
     } else {
       localStorage.removeItem('jwt');
