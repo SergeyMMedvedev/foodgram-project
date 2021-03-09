@@ -18,6 +18,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "copyToBackend": "cd ../backend && rm -r build && cd ../frontend && cp -r ./build/ ../backend",
+    "buildToBackend": "npm run build && cd ../backend && rm -r build && cd ../frontend && cp -r ./build/ ../backend",
     "deploy": "npm run build && scp -r ./build/* praktikum@84.201.178.66:/home/praktikum/frontend",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
