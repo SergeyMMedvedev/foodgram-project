@@ -12,7 +12,7 @@ services:
       - ./.env
 
   web:
-    image: serg733/foodgram:v1.1
+    image: serg733/foodgram:lastest
     restart: always
     depends_on:
       - postgres
