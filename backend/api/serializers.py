@@ -9,6 +9,7 @@ from .models import (
     Purchase
 )
 from users.serializers import UserSerializer
+from foodgram_api.settings import BASE_URL
 
 User = get_user_model()
 
@@ -70,7 +71,8 @@ class RecipeSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         if request:
             image_url = recipe.image.url
-            return f"http://127.0.0.1{image_url}"
+
+            return f"{BASE_URL}{image_url}"
 
 
 class FollowSerializer(serializers.ModelSerializer):

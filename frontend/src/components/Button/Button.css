@@ -11,7 +11,8 @@
   line-height: 1;
   text-decoration: none;
   border: 1px solid transparent;
-  transition: background 0.2s;
+  transition: background 0.2s,
+              opacity 0.2s;
   outline: none;
   user-select: none;
   cursor: pointer;
@@ -106,5 +107,11 @@
 
 .button_style_underline:hover {
   opacity: .6;
+}
+
+.button_saving {
+  opacity: .6;
+  transition: background .2s,
+              opacity .2s;
 }
 

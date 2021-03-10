@@ -27,3 +27,7 @@
 .disappearAnimation {
   animation: disappear .1s ease-in forwards 1 running;
 }
+
+.disappearAnimationLong {
+  animation: disappear .2s ease-in forwards 1 running;
+}

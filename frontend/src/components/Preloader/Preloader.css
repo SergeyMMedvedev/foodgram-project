@@ -1,0 +1,54 @@
+@keyframes spin {
+  from {
+    transform: rotate(0);
+  }
+  to{
+    transform: rotate(359deg);
+  }
+}
+
+.circle-preloader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%)
+}
+
+.circle-preloader__body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+}
+
+.circle-preloader__border {
+  width: 74px;
+  height: 74px;
+  padding: 1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background: rgb(255, 255, 255);
+  background: linear-gradient(0deg, rgba(26, 27, 34, 1) 0%, rgb(255, 255, 255) 90%);
+  animation: spin .8s linear 0s infinite;
+}
+
+.circle-preloader__core {
+  width: 100%;
+  height: 100%;
+  background-color: #ffffff;
+  border-radius: 50%;
+}
+
+.circle-preloader__text {
+	font-family: 'Roboto', Arial, sans-serif;
+	font-size: 18px;
+	line-height: 1.33;
+	width: fit-content;
+	margin: 24px auto 0 auto;
+	color: #b6bcbf;
+}

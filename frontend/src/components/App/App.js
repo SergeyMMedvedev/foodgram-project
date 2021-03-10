@@ -435,11 +435,23 @@ function App() {
       });
   }
 
-  function handleAddToFavorites(recipeId, page, author, allRecipesPage, favoriteRecipesPage) {
+  function handleAddToFavorites(params) {
+    const {
+      recipeId,
+      page,
+      author,
+      allRecipesPage,
+      favoriteRecipesPage,
+      getRecipeData,
+    } = params;
     api.addToFavoritesRecipes(recipeId)
       .then(() => {
         getRecipes(allRecipesPage ? { page, author } : {});
         getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
+        // для обновления состояния иконки сохранения на singlPage
+        if (getRecipeData) {
+          getRecipeData(recipeId);
+        }
       })
       .catch((err) => {
         setResponseError(err);
@@ -447,11 +459,23 @@ function App() {
       });
   }
 
-  function handleRemoveFromFavorites(recipeId, page, author, allRecipesPage, favoriteRecipesPage) {
+  function handleRemoveFromFavorites(params) {
+    const {
+      recipeId,
+      page,
+      author,
+      allRecipesPage,
+      favoriteRecipesPage,
+      getRecipeData,
+    } = params;
     api.deleteFromFavoritesRecipes(recipeId)
       .then(() => {
         getRecipes(allRecipesPage ? { page, author } : {});
         getFavoritesRecipes(favoriteRecipesPage ? { page } : {});
+        // для обновления состояния иконки сохранения на singlPage
+        if (getRecipeData) {
+          getRecipeData(recipeId);
+        }
       })
       .catch((err) => {
         setResponseError(err);

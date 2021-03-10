@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { API_BASE_URL } from './constants';
+import { SERVER_INTERNAL_URL } from './constants';
 import '../components/appearAnimation/appearAnimation.css';
 
 // для изменения количества выдачи элементов на страницу поменять здесь и в settings.py
@@ -57,12 +57,12 @@ function getLengthOfNextPageNumber(pagination) {
 
 // вырезает из url номер страницы
 function cutPageNumberFromUrl(page, lengthOfPageNumber) {
-  return page.substr(page.indexOf('page=', API_BASE_URL.length) + 5, lengthOfPageNumber);
+  return page.substr(page.indexOf('page=', SERVER_INTERNAL_URL.length) + 5, lengthOfPageNumber);
 }
 
 // вырезает из url параметр запроса страницы (кусок page=...)
 function cutPageFromUrl(page, lengthOfPageNumber) {
-  return page.substr(page.indexOf('page=', API_BASE_URL.length), 5 + lengthOfPageNumber);
+  return page.substr(page.indexOf('page=', SERVER_INTERNAL_URL.length), 5 + lengthOfPageNumber);
 }
 
 // возвращает текущую страницу, на которой сейчас пользователь

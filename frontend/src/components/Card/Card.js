@@ -5,6 +5,7 @@ import React, {
   useRef,
 } from 'react';
 import { Link } from 'react-router-dom';
+import cn from 'classnames';
 import './Card.css';
 import '../appearAnimation/appearAnimation.css';
 import testCardImg from '../../images/testCardImg.png';
@@ -34,37 +35,45 @@ function Card({
   onDeletePurchase,
   purchases,
 }) {
+  const [saveLoading, setSaveLoading] = useState(true);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [isCardFavorite, setIsCardFavorite] = useState(false);
   const [purchaseId, setPurchaseId] = useState('');
   const currentUser = useContext(CurrentUserContext);
   const cardRef = useRef();
 
   function handleAddToPurchase() {
+    setPurchaseLoading(true);
     onAddPurchase(recipeId);
-  }
-
-  function handleAddToFavorites() {
-    onAddToFavorites(
-      recipeId,
-      getCurrentPageNumber(pagination),
-      selectedAuthor,
-      allRecipesPage,
-      favoriteRecipesPage,
-    );
-  }
-
-  function handleRemoveFromFavorites() {
-    onDeleteFromFavorites(
-      recipeId,
-      allRecipesPage ? getCurrentPageNumber(pagination) : getCurrentPageNumberWithRemovingItems(pagination),
-      selectedAuthor,
-      allRecipesPage,
-      favoriteRecipesPage,
-    );
   }
 
   function handlePurchaseDelete() {
     onDeletePurchase(purchaseId);
+    setPurchaseLoading(true);
+  }
+
+  function handleAddToFavorites() {
+    setSaveLoading(true);
+    onAddToFavorites({
+      recipeId,
+      page: getCurrentPageNumber(pagination),
+      author: selectedAuthor,
+      allRecipesPage,
+      favoriteRecipesPage,
+    });
+  }
+
+  function handleRemoveFromFavorites() {
+    setDeleting(true);
+    setSaveLoading(true);
+    onDeleteFromFavorites({
+      recipeId,
+      page: allRecipesPage ? getCurrentPageNumber(pagination) : getCurrentPageNumberWithRemovingItems(pagination),
+      author: selectedAuthor,
+      allRecipesPage,
+      favoriteRecipesPage,
+    });
   }
 
   useEffect(() => {
@@ -73,8 +82,10 @@ function Card({
         item.username === currentUser.username
       ));
       setIsCardFavorite(isSaved);
+      setSaveLoading(false);
     } else {
       setIsCardFavorite(true);
+      setSaveLoading(false);
     }
   }, [subscribers]);
 
@@ -93,10 +104,11 @@ function Card({
         }
       }
     }
+    setPurchaseLoading(false);
   }, [purchases]);
 
   return (
-    <div ref={cardRef} className="card appearAnimation" data-id={`recipe__${recipeId}`}>
+    <div ref={cardRef} className={cn('card', 'appearAnimation', { disappearAnimationLong: (deleting && !allRecipesPage) })} data-id={`recipe__${recipeId}`}>
       <Link to={`/single-page/${recipeId}`} className="link card__image-link">
         <img src={image || testCardImg} alt={recipeName} className="card__image" />
       </Link>
@@ -117,7 +129,7 @@ function Card({
         </div>
       </div>
       <div className="card__footer">
-        {(purchaseId && currentUser.name) ? (
+        {(purchaseId && currentUser.username) ? (
           <Button
             text={(
               <>
@@ -127,7 +139,7 @@ function Card({
             )}
             onClick={handlePurchaseDelete}
             lightOrange
-            disabled={!currentUser.name}
+            disabled={!currentUser.username || purchaseLoading}
           />
 
         ) : (
@@ -140,16 +152,19 @@ function Card({
             )}
             onClick={handleAddToPurchase}
             lightBlue
-            disabled={!currentUser.name}
+            disabled={!currentUser.username || purchaseLoading}
           />
         )}
 
-        {currentUser.name && (
+        {currentUser.username && (
           <Button
             onClick={isCardFavorite ? handleRemoveFromFavorites : handleAddToFavorites}
+            loading={saveLoading}
+            favorite
+            disabled={saveLoading}
             text={(
               <IconFavorite
-                active={isCardFavorite}
+                active={isCardFavorite || saveLoading}
               />
             )}
           />
