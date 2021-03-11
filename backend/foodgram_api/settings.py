@@ -141,6 +141,7 @@ CORS_URLS_REGEX = r'^/api/.*$'
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
+    'http://localhost:5000',
     'http://foodgram.students.nomoredomains.icu',
     'http://www.foodgram.students.nomoredomains.icu',
     'http://api.foodgram.students.nomoredomains.icu',
