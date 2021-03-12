@@ -24,6 +24,8 @@ import ShopList from '../ShopList/ShopList';
 import SingleRecipePage from '../SingleRecipePage/SingleRecipePage';
 import ProtectedRoute from '../ProtectedRoute/ProtectedRoute';
 import InfoTooltip from '../InfoTooltip/InfoTooltip';
+import About from '../About/About';
+import Technologies from '../Technologies/Technologies';
 
 import api from '../../utils/Api';
 import auth from '../../utils/Auth';
@@ -696,6 +698,15 @@ function App() {
               />
             </Route>
 
+            <Route path="/about">
+              <About />
+            </Route>
+
+            <Route path="/technologies">
+              <Technologies />
+            </Route>
+
+            Technologies
             <Route>
               <Redirect to="/" />
             </Route>

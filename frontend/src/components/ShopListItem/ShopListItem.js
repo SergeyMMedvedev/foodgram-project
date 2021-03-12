@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import './ShopListItem.css';
 import '../appearAnimation/appearAnimation.css';
-import testCardImg from '../../images/testCardImg.png';
+import defaultImage from '../../images/defaultImage.png';
 
 function ShopListItem({
   recipe,
@@ -28,7 +28,7 @@ function ShopListItem({
     <li key={purchaseId} ref={shopItemRef} className="shopping-list__item" data-id="111">
       <div className="recipe recipe_reverse">
         <Link to={`/single-page/${recipe.id}`} className="recipe__image-link link">
-          <img src={testCardImg} alt={recipe.name} className="recipe__image recipe__image_big" />
+          <img src={recipe.image_url || defaultImage} alt={recipe.name} className="recipe__image recipe__image_big" />
         </Link>
         <Link to={`/single-page/${recipe.id}`} className="recipe__title-link link">
           <h3 className="recipe__title">{recipe.name}</h3>

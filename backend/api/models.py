@@ -55,7 +55,7 @@ class Recipe(models.Model):
                                  default='завтрак')
 
     cooking_time = models.PositiveIntegerField(
-        validators=[MinValueValidator(0), MaxValueValidator(1440)])
+        validators=[MinValueValidator(1), MaxValueValidator(1440)])
 
     subscribers = models.ManyToManyField(User,
                                          default=None,

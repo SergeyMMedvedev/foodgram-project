@@ -23,15 +23,27 @@ class IngredientAdmin(admin.ModelAdmin):
     empty_value_display = "-пусто-"
 
 
+class IngredientsInline(admin.TabularInline):
+    model = Ingredient
+
+
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('pk',
                     'author',
                     'name',
                     'image',
                     'description',
-                    'cooking_time',
+                    'ingredient_names',
+                    'subscribers_count',
                     )
-    search_fields = ("name",)
+
+    def subscribers_count(self, obj):
+        return obj.subscribers.all().count()
+
+    def ingredient_names(self, obj):
+        return list(obj.ingredient.all())
+
+    search_fields = ("name", "author__username",)
     empty_value_display = "-пусто-"
 
 

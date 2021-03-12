@@ -1,9 +1,8 @@
-import os
 import json
+import tempfile
 from django.contrib.auth import get_user_model
 from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404, HttpResponse
-
 from rest_framework import status, mixins, viewsets
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.generics import (
@@ -43,7 +42,7 @@ class IngredientViewSet(ModelViewSet):
     def get_queryset(self):
         if self.request.query_params:
             queryset = Ingredient.objects.filter(
-                name__startswith=self.request.query_params.get('search'),
+                name__istartswith=self.request.query_params.get('search'),
                 amount=0)
         else:
             queryset = Ingredient.objects.all()
@@ -63,15 +62,9 @@ class RecipeViewSet(ModelViewSet):
                 tag__name__in=tag_list).distinct()
         else:
             queryset = Recipe.objects.all()
-            for obj in queryset:
-                print(obj.image)
-                print(type(obj.image))
         return queryset
 
     def create(self, request, *args, **kwargs):
-        image = self.request.data.get('image')
-        print(image)
-        print(type(image))
         request_ingredients = json.loads(self.request.data.get('ingredient'))
         request_tags = json.loads(self.request.data.get('tag'))
         ingredients = []
@@ -91,9 +84,6 @@ class RecipeViewSet(ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
-        image = self.request.data.get('image')
-        print(image)
-        print(type(image))
         instance = self.get_object()
         request_ingredients = self.request.data.get('ingredient')
         request_ingredients = json.loads(request_ingredients)
@@ -214,22 +204,22 @@ def download_purchases(request, *args, **kwargs):
     ingredients = {}
     for item in request.data:
         for ingredient in item['purchase']['ingredient']:
-            if (f"{ingredient['name']} ({ingredient['units']})"
-                    in ingredients.keys()):
-                ingredients[f"{ingredient['name']} ({ingredient['units']})"] \
-                    += ingredient['amount']
+            ingredient_key = f"{ingredient['name']} ({ingredient['units']})"
+            if ingredient_key in ingredients.keys():
+                ingredients[ingredient_key] += ingredient['amount']
             else:
-                ingredients[f"{ingredient['name']} ({ingredient['units']})"] \
-                    = ingredient['amount']
+                ingredients[ingredient_key] = ingredient['amount']
 
-    with open("./temp_files/file.txt", 'w+') as f:
-        for key in ingredients.keys():
-            f.write(f"{key} — {ingredients[key]}\n")
+    with tempfile.TemporaryDirectory():
+        with open("file_text.txt", "w+") as f:
+            for key in ingredients.keys():
+                f.write(f"{key} — {ingredients[key]}\n")
 
-    file_text = open("./temp_files/file.txt", 'rb')
-    response = HttpResponse(FileWrapper(file_text),
-                            content_type='application/text charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="file_text.txt"'
-    if os.path.isfile('./temp_files/file.txt'):
-        os.remove('./temp_files/file.txt')
-    return response
+            f.seek(0)
+            response = HttpResponse(
+                FileWrapper(f),
+                content_type='application/text charset=utf-8')
+            response['Content-Disposition'] = ('attachment; '
+                                               'filename="f.txt"')
+            return response
+
