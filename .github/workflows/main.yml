@@ -48,6 +48,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           push: true
           tags: serg733/foodgram:lastest
+          script: |
+            cd backend
 
   send_message:
     runs-on: ubuntu-latest
