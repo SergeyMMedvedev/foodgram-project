@@ -32,6 +32,11 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+        with:
+          target: "~/foodgram-project/backend"
+          script: |
+            ls
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
@@ -46,7 +51,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}"
-          target: "~/foodgram-project/backend"
           push: true
           tags: serg733/foodgram:lastest
 
