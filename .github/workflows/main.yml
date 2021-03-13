@@ -69,7 +69,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
 #          source: "backend/docker-compose.yaml, backend/nginx/default.conf, backend/static, backend/media, backend/build"
-          source: "README.ms"
+          source: "README.md"
           target: ${{ env.PROJECT_ROOT }}
 
 #      - name: executing remote ssh commands to deploy
