@@ -68,25 +68,26 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: "backend/docker-compose.yaml, backend/nginx/default.conf, backend/static, backend/media, backend/build"
+#          source: "backend/docker-compose.yaml, backend/nginx/default.conf, backend/static, backend/media, backend/build"
+          source: "README.ms"
           target: ${{ env.PROJECT_ROOT }}
 
-      - name: executing remote ssh commands to deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            sudo apt update
-            sudo apt upgrade -y
-            sudo apt install docker -y
-            sudo apt install docker-compose -y
-            cd ${{ env.PROJECT_ROOT }}
-            sudo docker pull serg733/foodgram:latest
-            sudo docker-compose stop
-            sudo docker-compose rm web
-            sudo docker-compose up -d
+#      - name: executing remote ssh commands to deploy
+#        uses: appleboy/ssh-action@master
+#        with:
+#          host: ${{ secrets.HOST }}
+#          username: ${{ secrets.USER }}
+#          key: ${{ secrets.SSH_KEY }}
+#          script: |
+#            sudo apt update
+#            sudo apt upgrade -y
+#            sudo apt install docker -y
+#            sudo apt install docker-compose -y
+#            cd ${{ env.PROJECT_ROOT }}
+#            sudo docker pull serg733/foodgram:latest
+#            sudo docker-compose stop
+#            sudo docker-compose rm web
+#            sudo docker-compose up -d
 
   send_message:
     runs-on: ubuntu-latest
