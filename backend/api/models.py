@@ -6,8 +6,8 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=80, verbose_name='Название ингредиента')
-    units = models.CharField(max_length=80, verbose_name='единицы измерения')
+    name = models.CharField(max_length=100, verbose_name='Название ингредиента')
+    units = models.CharField(max_length=100, verbose_name='единицы измерения')
     amount = models.PositiveIntegerField(verbose_name='количество', default=0)
 
     class Meta:
@@ -39,7 +39,7 @@ class Recipe(models.Model):
                                on_delete=models.SET_NULL,
                                related_name="recipes",
                                null=True)
-    name = models.CharField(max_length=40, verbose_name='Название рецепта')
+    name = models.CharField(max_length=200, verbose_name='Название рецепта')
     image = models.ImageField(upload_to='static/images/',
                               null=True,
                               blank=True)
