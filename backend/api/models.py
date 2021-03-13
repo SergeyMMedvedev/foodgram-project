@@ -6,7 +6,9 @@ User = get_user_model()
 
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=100, verbose_name='Название ингредиента')
+    name = models.CharField(
+        max_length=100, verbose_name='Название ингредиента'
+    )
     units = models.CharField(max_length=100, verbose_name='единицы измерения')
     amount = models.PositiveIntegerField(verbose_name='количество', default=0)
 
