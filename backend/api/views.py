@@ -222,4 +222,3 @@ def download_purchases(request, *args, **kwargs):
             response['Content-Disposition'] = ('attachment; '
                                                'filename="f.txt"')
             return response
-
