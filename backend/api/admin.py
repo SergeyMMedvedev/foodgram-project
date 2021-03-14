@@ -10,7 +10,7 @@ from .models import (
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name')
-    empty_value_display = "-пусто-"
+    empty_value_display = '-пусто-'
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -19,8 +19,8 @@ class IngredientAdmin(admin.ModelAdmin):
         'name',
         'amount',
         'units')
-    search_fields = ("name",)
-    empty_value_display = "-пусто-"
+    search_fields = ('name',)
+    empty_value_display = '-пусто-'
 
 
 class IngredientsInline(admin.TabularInline):
@@ -39,12 +39,14 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def subscribers_count(self, obj):
         return obj.subscribers.all().count()
+    subscribers_count.short_description = 'Количество сохранений'
 
     def ingredient_names(self, obj):
         return list(obj.ingredient.all())
+    ingredient_names.short_description = 'Ингредиенты'
 
-    search_fields = ("name", "author__username",)
-    empty_value_display = "-пусто-"
+    search_fields = ('name', 'author__username',)
+    empty_value_display = '-пусто-'
 
 
 class FollowAdmin(admin.ModelAdmin):
@@ -52,7 +54,7 @@ class FollowAdmin(admin.ModelAdmin):
                     'user',
                     'author',
                     )
-    empty_value_display = "-пусто-"
+    empty_value_display = '-пусто-'
 
 
 class PurchaseAdmin(admin.ModelAdmin):
@@ -60,7 +62,7 @@ class PurchaseAdmin(admin.ModelAdmin):
                     'user',
                     'purchase',
                     )
-    empty_value_display = "-пусто-"
+    empty_value_display = '-пусто-'
 
 
 admin.site.register(Ingredient, IngredientAdmin)

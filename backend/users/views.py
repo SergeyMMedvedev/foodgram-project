@@ -78,21 +78,21 @@ class ChangePasswordView(UpdateAPIView):
         serializer = self.get_serializer(data=request.data)
 
         if serializer.is_valid():
-            old_password = serializer.data.get("old_password")
+            old_password = serializer.data.get('old_password')
             if not obj.check_password(old_password):
-                return Response({"old_password": ["неверный пароль."]},
+                return Response({'old_password': ['неверный пароль.']},
                                 status=status.HTTP_400_BAD_REQUEST)
-            new_password = serializer.data.get("new_password")
-            new_password_again = serializer.data.get("new_password_again")
+            new_password = serializer.data.get('new_password')
+            new_password_again = serializer.data.get('new_password_again')
             if new_password == old_password:
                 return Response(
                     {
-                        "new_password":
-                            ["старый пароль не отличается от нового"]},
+                        'new_password':
+                            ['старый пароль не отличается от нового']},
                         status=status.HTTP_400_BAD_REQUEST
                 )
             if new_password == new_password_again:
-                obj.set_password(serializer.data.get("new_password"))
+                obj.set_password(serializer.data.get('new_password'))
                 obj.save()
                 response = {
                     'status': 'success',
@@ -104,7 +104,7 @@ class ChangePasswordView(UpdateAPIView):
                 return Response(response)
             else:
                 return Response({
-                    "new_password": ["новый пароль не подтвержден"]},
+                    'new_password': ['новый пароль не подтвержден']},
                                 status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -130,8 +130,8 @@ class UserCreateAPIView(CreateAPIView):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         token, created = Token.objects.get_or_create(
-            user_id=response.data["id"])
-        response.data["token"] = str(token)
+            user_id=response.data['id'])
+        response.data['token'] = str(token)
         return response
 
 
@@ -172,7 +172,7 @@ class ResetPasswordConfirm(GenericAPIView):
             key=token).first()
 
         if not reset_password_token:
-            return Response({"ошибка": "ссылка не действительна"},
+            return Response({'ошибка': 'ссылка не действительна'},
                             status=status.HTTP_400_BAD_REQUEST)
 
         eligible_for_reset = reset_password_token.user.eligible_for_reset()
@@ -203,7 +203,7 @@ class ResetPasswordConfirm(GenericAPIView):
             user=reset_password_token.user
         ).delete()
         mail_subject = 'New password.'
-        message = f"Ваш новый пароль: {password}"
+        message = f'Ваш новый пароль: {password}'
         to_email = str(reset_password_token.user.email)
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
@@ -245,8 +245,8 @@ class ResetPasswordRequestToken(GenericAPIView):
         ):
             raise exceptions.ValidationError({
                 'email': [_(
-                    "Аккаунт, связанный с этой почтой не найден "
-                    "Попробуйте другой адрес."
+                    'Аккаунт, связанный с этой почтой не найден '
+                    'Попробуйте другой адрес.'
                 )],
             })
 
@@ -288,11 +288,11 @@ def password_reset_token_created(
     mail_subject = 'Сброс пароля.'
     message = get_reset_password_email_message(
         website=instance.request.META['HTTP_HOST'],
-        page=f"{address}?token={token}",
+        page=f'{address}?token={token}',
         user=reset_password_token.user.username
     )
     to_email = str(reset_password_token.user.email)
     email = EmailMessage(mail_subject, message, to=[to_email])
     email.send()
-    return Response({'email': f"сообщение отправлено на {to_email}"},
+    return Response({'email': f'сообщение отправлено на {to_email}'},
                     status=status.HTTP_200_OK)

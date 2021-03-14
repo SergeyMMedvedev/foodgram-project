@@ -9,8 +9,8 @@ class WebUser(User):
 
     class Meta:
         proxy = True
-        verbose_name = "User"
-        verbose_name_plural = "Users"
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
 
 
 class UserAdmin(admin.ModelAdmin):

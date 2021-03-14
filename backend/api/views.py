@@ -43,7 +43,7 @@ class IngredientViewSet(ModelViewSet):
         if self.request.query_params:
             queryset = Ingredient.objects.filter(
                 name__istartswith=self.request.query_params.get('search'),
-                amount=0)
+                amount=1)
         else:
             queryset = Ingredient.objects.all()
         return queryset
@@ -56,7 +56,7 @@ class RecipeViewSet(ModelViewSet):
     filter_fields = ['author__username', ]
 
     def get_queryset(self):
-        tag_list = self.request.GET.getlist("tag__name")
+        tag_list = self.request.GET.getlist('tag__name')
         if tag_list:
             queryset = Recipe.objects.filter(
                 tag__name__in=tag_list).distinct()
@@ -151,7 +151,7 @@ class FavoriteAPIView(
     filter_fields = ['author__username', ]
 
     def get_queryset(self):
-        tag_list = self.request.GET.getlist("tag__name")
+        tag_list = self.request.GET.getlist('tag__name')
         if tag_list:
             queryset = Recipe.objects.filter(
                 subscribers=self.request.user,
@@ -211,14 +211,14 @@ def download_purchases(request, *args, **kwargs):
                 ingredients[ingredient_key] = ingredient['amount']
 
     with tempfile.TemporaryDirectory():
-        with open("file_text.txt", "w+") as f:
+        with open('file_text.txt', 'w+') as f:
             for key in ingredients.keys():
-                f.write(f"{key} — {ingredients[key]}\n")
+                f.write(f'{key} — {ingredients[key]}\n')
 
             f.seek(0)
             response = HttpResponse(
                 FileWrapper(f),
                 content_type='application/text charset=utf-8')
             response['Content-Disposition'] = ('attachment; '
-                                               'filename="f.txt"')
+                                               "filename='f.txt'")
             return response

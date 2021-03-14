@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'd$o8h-2@&(ejm669sqy(n(ocwxh#oqh6qgm8uorb$@)dm24ssi'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*', 'localhost:3000']
 
@@ -66,15 +66,18 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT'),
     }
 }
-BASE_URL = "http://api.foodgram.students.nomoredomains.icu"
+BASE_URL = 'http://api.foodgram.students.nomoredomains.icu'
 
+"""
+Настройки для локального тестирования
+"""
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
 #         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
-# BASE_URL = "http://127.0.0.1:8000"
+# BASE_URL = 'http://127.0.0.1:8000'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -116,6 +119,10 @@ CORS_ORIGIN_WHITELIST = [
     'http://www.foodgram.students.nomoredomains.icu',
     'http://api.foodgram.students.nomoredomains.icu',
     'http://www.api.foodgram.students.nomoredomains.icu',
+    'https://foodgram.students.nomoredomains.icu',
+    'https://www.foodgram.students.nomoredomains.icu',
+    'https://api.foodgram.students.nomoredomains.icu',
+    'https://www.api.foodgram.students.nomoredomains.icu',
 ]
 
 REST_FRAMEWORK = {
@@ -129,6 +136,6 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, "sent_emails")
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

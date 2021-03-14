@@ -25,6 +25,7 @@ function FormRecipe({
   const [nameIngredient, setNameIngredient] = useState('');
   const [nameUnits, setNameUnits] = useState('');
   const [amountUnits, setAmountUnits] = useState('');
+  const [amountUnitsError, setAmountUnitsErorr] = useState('');
   const [cookingTime, setCookingTime] = useState('');
   const [cookingTimeError, setCookingTimeError] = useState('');
   const [description, setDescription] = useState('');
@@ -62,6 +63,7 @@ function FormRecipe({
 
   function handleAmountChange(e) {
     setAmountUnits(e.target.value);
+    setAmountUnitsErorr(e.target.validationMessage);
   }
 
   function handleItemClick(name, units) {
@@ -278,8 +280,16 @@ function FormRecipe({
                 </div>
               ))}
             </div>
-            <button onClick={handleAddIngredient} type="button" className="form__ingredient-add-btn" id="addIng">Добавить ингредиент</button>
-            <span className="form__error" />
+            <button
+              onClick={handleAddIngredient}
+              type="button"
+              className={cn('form__ingredient-add-btn', { 'form__ingredient-add-btn_disabled': Boolean(amountUnitsError || !amountUnits || !nameUnits) })}
+              id="addIng"
+              disabled={Boolean(amountUnitsError || !amountUnits || !nameUnits)}
+            >
+              Добавить ингредиент
+            </button>
+            <span className={cn('form__error', { form__error_active: amountUnitsError })}>{amountUnitsError}</span>
           </div>
         </div>
 

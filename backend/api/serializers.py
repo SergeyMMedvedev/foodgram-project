@@ -18,7 +18,7 @@ User = get_user_model()
 class IngredientSerializer(serializers.ModelSerializer):
     name = serializers.CharField(required=True)
     units = serializers.CharField(required=True)
-    amount = serializers.IntegerField(required=True)
+    amount = serializers.IntegerField(required=True, min_value=1)
 
     class Meta:
         fields = ('id', 'name', 'amount', 'units')
@@ -73,7 +73,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         if request:
             image_url = recipe.image.url
 
-            return f"{BASE_URL}{image_url}"
+            return f'{BASE_URL}{image_url}'
 
 
 class FollowSerializer(serializers.ModelSerializer):
