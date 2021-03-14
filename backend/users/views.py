@@ -8,6 +8,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.dispatch import receiver
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils import timezone
@@ -165,15 +166,17 @@ class ResetPasswordConfirm(GenericAPIView):
     permission_classes = ()
     serializer_class = PasswordTokenSerializer
 
-    def post(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         token = request.query_params.get('token')
         password = get_random_string(12)
         reset_password_token = ResetPasswordToken.objects.filter(
             key=token).first()
 
         if not reset_password_token:
-            return Response({'ошибка': 'ссылка не действительна'},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return HttpResponse(
+                'ссылка не действительна',
+                content_type='text/plain; charset=utf-8',
+            )
 
         eligible_for_reset = reset_password_token.user.eligible_for_reset()
         if eligible_for_reset:
@@ -208,7 +211,10 @@ class ResetPasswordConfirm(GenericAPIView):
         email = EmailMessage(mail_subject, message, to=[to_email])
         email.send()
 
-        return Response({'status': f'ваш новый пароль {password}'})
+        return HttpResponse(
+            'на вашу почту был отправлен новый пароль',
+            content_type='text/plain; charset=utf-8',
+        )
 
 
 class ResetPasswordRequestToken(GenericAPIView):
