@@ -10,7 +10,6 @@ from django.core.mail import EmailMessage
 from django.dispatch import receiver
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
