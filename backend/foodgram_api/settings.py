@@ -1,4 +1,5 @@
 import os
+from django.utils.log import DEFAULT_LOGGING
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -136,6 +137,19 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 6,
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+DEFAULT_FROM_EMAIL = 'foodgramsmtp@gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "foodgramsmtp@gmail.com"
+EMAIL_HOST_PASSWORD = "mzxtA5QcFx3DbZE"
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+SERVER_EMAIL = 'foodgramsmtp@gmail.com'
 
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+DEFAULT_LOGGING['handlers']['console']['filters'] = []
+DEFAULT_LOGGING['loggers'][''] = {
+    'handlers': ['console'],
+    'level': 'INFO',
+    'propagate': True
+}
+

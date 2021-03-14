@@ -301,7 +301,7 @@ function FormRecipe({
               id="id_time"
               name="cooking_time"
               className="form__input"
-              min="0"
+              min="1"
               maxLength="3"
               value={cookingTime}
               onChange={handkeCookingTimeChange}

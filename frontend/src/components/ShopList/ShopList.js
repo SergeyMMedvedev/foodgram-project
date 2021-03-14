@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './ShopList.css';
 import CardList from '../CardList/CardList';
 import ShopListItem from '../ShopListItem/ShopListItem';
@@ -19,26 +20,34 @@ function ShopList({
   return (
     <>
       {renderMainHeader(header)}
-      <CardList column>
-        <ul className="shopping-list">
-          {purchases.map((purchaseData) => (
-            <ShopListItem
-              key={purchaseData.id}
-              recipe={purchaseData.purchase}
-              purchaseId={purchaseData.id}
-              onDeletePurchase={onDeletePurchase}
-            />
-          ))}
-        </ul>
+      {purchases.length < 1 ? (
+        <Link to="/" className="shopping-list__return-button">
+          Добавить покупки
+        </Link>
+      ) : (
 
-        <Button
-          blue
-          text="Скачать список"
-          onClick={handleDownload}
-          disabled={purchases.length < 1}
-        />
+        <CardList column>
+          <ul className="shopping-list">
+            {purchases.map((purchaseData) => (
+              <ShopListItem
+                key={purchaseData.id}
+                recipe={purchaseData.purchase}
+                purchaseId={purchaseData.id}
+                onDeletePurchase={onDeletePurchase}
+              />
+            ))}
+          </ul>
 
-      </CardList>
+          <Button
+            blue
+            text="Скачать список"
+            onClick={handleDownload}
+            disabled={purchases.length < 1}
+          />
+
+        </CardList>
+
+      )}
     </>
   );
 }
