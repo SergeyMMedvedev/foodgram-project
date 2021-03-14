@@ -65,6 +65,7 @@ jobs:
       - name: copy docker-compose and nginx
         uses: appleboy/scp-action@master
         with:
+          command_timeout: 20m
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
@@ -74,6 +75,7 @@ jobs:
       - name: executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
+          command_timeout: 20m
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
