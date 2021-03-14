@@ -68,6 +68,7 @@ DATABASES = {
     }
 }
 BASE_URL = 'http://api.foodgram.students.nomoredomains.icu'
+PASSWORD_RESET_URL = 'http://api.foodgram.students.nomoredomains.icu/api/v1/users/reset-password/confirm'
 
 """
 Настройки для локального тестирования

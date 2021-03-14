@@ -288,13 +288,12 @@ reset_password_request_token = ResetPasswordRequestToken.as_view()
 @receiver(reset_password_token_created)
 def password_reset_token_created(
         sender, instance, reset_password_token, *args, **kwargs):
-    address = instance.request.build_absolute_uri(
-        reverse('password_reset:reset-password-confirm'))
+    address = settings.PASSWORD_RESET_URL
     token = reset_password_token.key
     mail_subject = 'Сброс пароля.'
     message = get_reset_password_email_message(
         website=instance.request.META['HTTP_HOST'],
-        page=f'{address}?token={token}',
+        page=f'{address}/?token={token}',
         user=reset_password_token.user.username
     )
     to_email = str(reset_password_token.user.email)
