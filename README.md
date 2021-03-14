@@ -19,12 +19,65 @@
 а перед походом в магазин скачивать сводный список продуктов, 
 необходимых для приготовления одного или нескольких выбранных блюд.
 
+
 ## Начало
 
 Клонирование проекта:
 ```
 git clone https://github.com/SergeyMMedvedev/foodgram-project.git
 ```
+
+## Запуск для проверки
+
+Проект состоит из двух частей:
+- frontend
+- backend
+
+На сервере фронтенд и бекэнд на разных поддоменах:
+
+* Фронтенд
+  - http://foodgram.students.nomoredomains.icu
+  - http://www.foodgram.students.nomoredomains.icu
+* Бекэнд
+  - http://api.foodgram.students.nomoredomains.icu
+  - http://www.api.foodgram.students.nomoredomains.icu
+
+Для локальной проверки:
+
+ - Находясь в папке backend:
+    * ```
+      docker-compose up 
+      ```
+- Находясь в папке frontend:
+    * Если проверять работу фронтенда с базой данных в локально развернутом контйнере, то 
+    необходимо поменять URL в frontend/src/utils/constants.js на:
+        
+    ```
+    ULR для Postgresql при локальном разворачивании контейнеров
+    export const API_BASE_URL = 'http://127.0.0.1/api/v1';
+    ```
+    * Если проверять работу фронтенда с базой данных сервера, то оставить текущий url
+    
+    Запуск готовой сборки фронтенда
+    * ```
+      serve -s backend/build
+      ```
+
+    Установка зависимостей:
+    * ```
+      npm install  
+      ```
+    Запустить сервер фронтенда:
+    * ```
+      npm run start 
+      ```
+    Сборка фронтенда:
+    * ```
+      npm run buildToBackend
+      ```
+
+До первого запуска на сервере необходимо добавить файл .env.
+
 Для добавления файла .env с настройками базы данных на сервер необходимо:
 
 * Установить соединение с сервером по протоколу ssh:
@@ -76,45 +129,7 @@ git clone https://github.com/SergeyMMedvedev/foodgram-project.git
 * TELEGRAM_TO - id своего телеграм-аккаунта (можно узнать у @userinfobot, команда /start)
 * TELEGRAM_TOKEN - токен бота (получить токен можно у @BotFather, /token, имя бота)
 
-## Запуск для проверки (ревью, первый этап)
 
-Проект состоит из двух частей:
-- frontend
-- backend
-
-Для локальной проверки:
-
- - Находясь в папке backend:
-    * ```
-      python -m venv venv  
-      ```
-    * ```
-      source venv/Scripts/activate
-      ```      
-    * ```
-      pip install -r requirements.txt
-      ```
-    Из репозитория также возьмется файл базы данных с тестовыми данными.
-    
-    Далее запуск сервера.     
-
-    * ```
-      python manage.py runserver
-      ```     
-    Уже созданный суперпользователь:
-    * name: admin
-    * password: admin@admin.com
- - После запуска сервера разработки Django, перейти в папку frontend:
-    
-    Установить зависимости:
-    * ```
-      npm install  
-      ```
-    Запустить сервер фронтенда:
-    * ```
-      npm run start 
-      ```
-      
 ### Проверка работоспособности
 
 Теперь если внести любые изменения в проект и выполнить:
