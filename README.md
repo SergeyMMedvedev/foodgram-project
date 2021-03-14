@@ -44,6 +44,10 @@ git clone https://github.com/SergeyMMedvedev/foodgram-project.git
 
 Для локальной проверки:
 
+**Доступ к админке:**
+* **username: admin**
+* **password: admin@admin.com**
+
  - Находясь в папке backend:
     * ```
       docker-compose up 
