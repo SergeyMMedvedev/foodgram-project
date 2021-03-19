@@ -19,6 +19,7 @@ services:
     env_file:
       - ./.env
     volumes:
+      - /etc/letsencrypt/live/foodgram.students.nomoredomains.icu/:/etc/letsencrypt/live/yfoodgram.students.nomoredomains.icu/
       - ./build:/code/build
       - ./static:/code/static
       - ./media:/code/media
