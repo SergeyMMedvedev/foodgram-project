@@ -156,3 +156,5 @@ yarn-error.log*
 # auxiliary files
 commands.txt
 commands-cloud.txt
+backend/test_nginx_conf
+backend/temp_files
