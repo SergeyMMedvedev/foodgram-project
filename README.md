@@ -33,15 +33,6 @@ git clone https://github.com/SergeyMMedvedev/foodgram-project.git
 - frontend
 - backend
 
-На сервере фронтенд и бекэнд на разных поддоменах:
-
-* Фронтенд
-  - http://foodgram.students.nomoredomains.icu
-  - http://www.foodgram.students.nomoredomains.icu
-* Бекэнд
-  - http://api.foodgram.students.nomoredomains.icu
-  - http://www.api.foodgram.students.nomoredomains.icu
-
 Для локальной проверки:
 
 **Доступ к админке:**
