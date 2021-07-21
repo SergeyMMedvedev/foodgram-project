@@ -13,7 +13,7 @@
 [![CSS](https://img.shields.io/badge/-CSS-464646??style=flat-square&logo=css3)](https://www.w3.org/Style/CSS/specs.ru.html)
 [![HTML](https://img.shields.io/badge/-HTML-464646??style=flat-square&logo=HTML5)](https://www.w3.org/TR/html52/introduction.html#introduction)
 
-[Foodgram](http://foodgram.students.nomoredomains.icu/) - Это онлайн-сервис, где пользователи смогут публиковать рецепты, 
+Foodgram - Это онлайн-сервис, где пользователи смогут публиковать рецепты, 
 подписываться на публикации других пользователей, 
 добавлять понравившиеся рецепты в список «Избранное», 
 а перед походом в магазин скачивать сводный список продуктов, 
@@ -258,4 +258,3 @@ ctrl+ D
 ## Автор
 
 * **Сергей Медведев** - [SergeyMMedvedev](https://github.com/SergeyMMedvedev)
-* **Сайт:** http://foodgram.students.nomoredomains.icu/
